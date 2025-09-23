@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { ShoppingCart, Search, Menu, X } from 'lucide-react'
 import { mockProducts } from '@/lib/data'
 import { Product } from '@/types'
@@ -56,14 +57,14 @@ export default function HomePage() {
 
             {/* Cart */}
             <div className="flex items-center space-x-4">
-              <button className="relative p-2 text-gray-600 hover:text-primary-600">
+              <Link href="/cart" className="relative p-2 text-gray-600 hover:text-primary-600">
                 <ShoppingCart className="h-6 w-6" />
                 {cart.length > 0 && (
                   <span className="absolute -top-1 -right-1 bg-primary-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                     {cart.length}
                   </span>
                 )}
-              </button>
+              </Link>
               
               {/* Mobile menu button */}
               <button
