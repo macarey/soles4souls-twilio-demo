@@ -1,15 +1,15 @@
 # Levelpath Shoes AI Assistant Demo
 
 ## 🎯 Project Overview
-A comprehensive demo showcasing Twilio AI Assistants as a SaaS solution for Levelpath Shoes, an online shoe retailer. This project demonstrates AI-powered customer support with deflection capabilities, escalation workflows, and executive dashboards.
+A comprehensive demo showcasing Twilio AI Assistants as a SaaS solution for Levelpath Shoes, an online shoe retailer. This project demonstrates the **value proposition** of AI-powered customer support by comparing a basic AI system with Twilio's advanced AI Assistant platform, highlighting deflection capabilities, escalation workflows, and executive dashboards.
 
 ## 📋 Demo Requirements
 - **45-minute presentation** split into two parts:
   1. Implementation Kickoff & Project Plan (15 min)
   2. Executive Product Training (15 min)
-- **Live demo** of AI Assistant embedded in shoe store
-- **Real Twilio integration** with Tools and Knowledge features
-- **Executive dashboard** with key metrics
+- **Live demo** comparing Basic AI vs Twilio AI Assistant
+- **Value demonstration** showing reduced agent engagement and improved customer satisfaction
+- **Executive dashboard** with comparative metrics
 
 ## 🛠️ Technical Stack
 - **Frontend**: Next.js 14 + TypeScript + Tailwind CSS
@@ -46,13 +46,20 @@ A comprehensive demo showcasing Twilio AI Assistants as a SaaS solution for Leve
 - [x] CSAT monitoring
 - [x] Real-time data updates (TBD)
 
-### Phase 5: Presentation Materials
+### Phase 5: Enhanced Demo Experience (In Progress)
+- [ ] AI Mode Toggle (Basic AI vs Twilio AI Assistant)
+- [ ] Enhanced "Basic AI" with realistic limitations
+- [ ] Comparative metrics dashboard
+- [ ] Value proposition demonstration
+- [ ] Side-by-side performance comparison
+
+### Phase 6: Presentation Materials
 - [ ] Implementation kickoff slides
 - [ ] Executive training slides
 - [ ] Demo flow documentation
 - [ ] Success criteria and KPIs
 
-### Phase 6: Deployment & Testing
+### Phase 7: Deployment & Testing
 - [ ] Vercel deployment configuration
 - [ ] Environment variables setup
 - [ ] Live testing with Twilio integration
@@ -79,30 +86,39 @@ NEXT_PUBLIC_APP_URL=https://your-vercel-app.vercel.app
 - Order tracking and history
 - Return/exchange process
 
-### AI Assistant Features
+### AI Assistant Comparison Demo
+- **Basic AI Mode**: Simple keyword matching with frequent escalations
+- **Twilio AI Mode**: Advanced AI with Tools and Knowledge capabilities
+- **Mode Toggle**: Switch between AI systems to demonstrate value
+- **Comparative Metrics**: Side-by-side performance comparison
+
+### AI Assistant Features (Twilio Mode)
 - **Tools**: Order lookup, return processing, store locator
 - **Knowledge**: FAQ, store hours, shipping policies
-- **Escalation**: Seamless handoff to human agents
-- **Analytics**: Conversation tracking and metrics
+- **Intelligent Escalation**: Only when truly necessary
+- **Advanced Analytics**: Conversation tracking and metrics
 
 ### Executive Dashboard
-- Deflection rate: Target 30% in 90 days
-- Average handle time reduction
-- Customer satisfaction improvement
-- Adoption tracking and reporting
+- **Comparative Metrics**: Basic AI vs Twilio AI performance
+- **Deflection Rate**: Basic AI (15%) vs Twilio AI (32%)
+- **Agent Engagement**: Reduced by 60% with Twilio AI
+- **Customer Satisfaction**: Improved from 3.2/5 to 4.7/5
+- **Cost Savings**: $45K annually with Twilio AI
 
 ## 🎯 Success Criteria
-- Live demo of AI Assistant handling common inquiries
-- Smooth escalation to human agents
-- Executive dashboard showing key metrics
-- Professional presentation materials
-- Deployed and accessible via Vercel
+- **Value Demonstration**: Clear comparison between Basic AI and Twilio AI Assistant
+- **Reduced Escalations**: Show 60% reduction in agent handoffs with Twilio AI
+- **Improved Metrics**: Demonstrate better deflection rates and customer satisfaction
+- **Cost Justification**: Show $45K annual savings with Twilio AI
+- **Executive Dashboard**: Real-time comparative metrics
+- **Live Demo**: Seamless switching between AI modes
+- **Professional Presentation**: Deployed and accessible via Vercel
 
 ## 🎉 Current Status
 - **Application**: Live and running at `http://localhost:3000`
 - **Features**: Storefront, AI Chat, Executive Dashboard all functional
 - **Integration**: Twilio AI Assistant ready (with demo fallback)
-- **Next Steps**: Presentation materials and Vercel deployment
+- **Next Steps**: Enhanced demo experience with AI mode comparison
 
 ## 📁 Project Structure
 ```
@@ -138,4 +154,4 @@ NEXT_PUBLIC_APP_URL=https://your-vercel-app.vercel.app
 
 ---
 **Last Updated**: December 2024
-**Status**: Phases 1-4 Complete, Phase 5 In Progress
+**Status**: Phases 1-4 Complete, Phase 5 Enhanced Demo Experience In Progress

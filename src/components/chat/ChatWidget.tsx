@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { Send, X, MessageCircle, Bot, User, Phone } from 'lucide-react'
+import { Send, X, MessageCircle, Bot, User, Phone, ToggleLeft, ToggleRight } from 'lucide-react'
 import { ChatMessage } from '@/types'
 
 interface ChatWidgetProps {
@@ -9,11 +9,13 @@ interface ChatWidgetProps {
   onClose: () => void
 }
 
+type AIMode = 'basic' | 'twilio'
+
 export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: '1',
-      content: "Hi! I'm your AI assistant powered by Twilio AI Assistants. I can help you with order tracking, returns, store hours, and more. How can I assist you today?",
+      content: "Hi! I'm your AI assistant. I can help you with order tracking, returns, store hours, and more. How can I assist you today?",
       sender: 'assistant',
       timestamp: new Date().toISOString(),
     }
@@ -22,6 +24,7 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
   const [isTyping, setIsTyping] = useState(false)
   const [conversationSid, setConversationSid] = useState<string | null>(null)
   const [isConnected, setIsConnected] = useState(false)
+  const [aiMode, setAiMode] = useState<AIMode>('basic')
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const scrollToBottom = () => {
@@ -32,12 +35,12 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
     scrollToBottom()
   }, [messages])
 
-  // Initialize Twilio conversation when chat opens
+  // Initialize Twilio conversation when chat opens and mode is Twilio
   useEffect(() => {
-    if (isOpen && !conversationSid) {
+    if (isOpen && !conversationSid && aiMode === 'twilio') {
       initializeConversation()
     }
-  }, [isOpen, conversationSid])
+  }, [isOpen, conversationSid, aiMode])
 
   const initializeConversation = async () => {
     try {
@@ -98,57 +101,95 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
     }
   }
 
-  const simulateAIResponse = async (userMessage: string): Promise<string> => {
+  const getBasicAIResponse = async (userMessage: string): Promise<string> => {
+    // Simulate processing time
+    await new Promise(resolve => setTimeout(resolve, 1500 + Math.random() * 1000))
+    
+    const lowerMessage = userMessage.toLowerCase()
+    
+    // Basic AI - Limited knowledge, frequent escalations
+    if (lowerMessage.includes('order') && (lowerMessage.includes('status') || lowerMessage.includes('track'))) {
+      const orderId = userMessage.match(/ORD-\d+/)?.[0] || 'ORD-001'
+      return `I found order ${orderId} in our system. It shows as "processing" but I don't have detailed tracking information. Let me connect you with a customer service agent who can provide more specific details about your order status.`
+    }
+    
+    if (lowerMessage.includes('return') || lowerMessage.includes('refund')) {
+      return `I understand you want to return an item. Our return policy is 30 days, but I need to connect you with a customer service representative to process your return request. They'll be able to help you with the return label and instructions.`
+    }
+    
+    if (lowerMessage.includes('hours') || lowerMessage.includes('open') || lowerMessage.includes('close')) {
+      return `Our store hours are Monday-Friday 9AM-8PM, Saturday 10AM-6PM, Sunday 11AM-5PM. However, I'm not sure about holiday hours or special events. Let me connect you with someone who can give you the most current information.`
+    }
+    
+    if (lowerMessage.includes('shipping') || lowerMessage.includes('delivery')) {
+      return `I know we offer shipping, but I don't have access to current shipping rates or delivery times. A customer service agent can provide you with accurate shipping information and help you choose the best option for your needs.`
+    }
+    
+    if (lowerMessage.includes('size') || lowerMessage.includes('fit')) {
+      return `I understand you have questions about sizing. Our sizing can vary by product, and I don't have access to detailed size charts. Let me connect you with a customer service representative who can help you find the right size.`
+    }
+    
+    // Escalation triggers for basic AI
+    if (lowerMessage.includes('agent') || lowerMessage.includes('human') || lowerMessage.includes('speak to someone')) {
+      return `I understand you'd like to speak with a human agent. Let me connect you with one of our customer service representatives right away.`
+    }
+    
+    // Default response for basic AI - always escalates
+    return `I understand you're asking about "${userMessage}". I'm still learning and don't have enough information to help you with this specific question. Let me connect you with a customer service representative who can provide you with the assistance you need.`
+  }
+
+  const getTwilioAIResponse = async (userMessage: string): Promise<string> => {
     // Try real Twilio integration first
     if (isConnected && conversationSid) {
       try {
         return await sendMessageToTwilio(userMessage)
       } catch (error) {
-        console.error('Twilio integration failed, falling back to demo mode:', error)
+        console.error('Twilio integration failed, falling back to enhanced demo mode:', error)
       }
     }
 
-    // Fallback to demo simulation
+    // Enhanced demo simulation for Twilio AI
     await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000))
     
     const lowerMessage = userMessage.toLowerCase()
     
-    // Order lookup tool simulation
+    // Twilio AI - Advanced capabilities, intelligent responses
     if (lowerMessage.includes('order') && (lowerMessage.includes('status') || lowerMessage.includes('track'))) {
       const orderId = userMessage.match(/ORD-\d+/)?.[0] || 'ORD-001'
-      return `I found your order ${orderId}! It's currently shipped and on its way. You can track it with tracking number TRK-${orderId}. Would you like me to help with anything else?`
+      return `I found your order ${orderId}! Here are the details:\n\n📦 **Order Status**: Shipped\n🚚 **Tracking Number**: TRK-${orderId}\n📅 **Estimated Delivery**: December 25, 2024\n📍 **Current Location**: In transit from our warehouse\n\nYour order contains:\n• Levelpath Runner Pro (Size 10, Black) - $129.99\n\nYou can track your package using the tracking number above. Is there anything else I can help you with regarding this order?`
     }
     
-    // Return request tool simulation
     if (lowerMessage.includes('return') || lowerMessage.includes('refund')) {
-      return `I can help you process a return! To start a return, I'll need your order ID. Once you provide it, I can generate a return label and walk you through the process. Our return policy allows returns within 30 days for unworn items in original packaging. What's your order ID?`
+      return `I can help you process a return! Here's what I can do for you:\n\n✅ **Return Eligibility**: 30-day return policy for unworn items\n📦 **Return Process**: I can generate a return label for you\n💰 **Refund Method**: Original payment method\n\nTo get started, I'll need your order ID. Once you provide it, I can:\n• Generate a prepaid return label\n• Email you return instructions\n• Process your refund once the item is received\n\nWhat's your order ID?`
     }
     
-    // Store hours knowledge simulation
     if (lowerMessage.includes('hours') || lowerMessage.includes('open') || lowerMessage.includes('close')) {
-      return `Our store hours are:\n• Monday-Thursday: 9AM-8PM\n• Friday: 9AM-9PM\n• Saturday: 10AM-8PM\n• Sunday: 11AM-6PM\n\nWe're located at 789 Fashion Blvd, San Francisco, CA 94102. You can also reach us at (555) 123-4567. Is there anything else I can help you with?`
-    }
-    
-    // Escalation trigger
-    if (lowerMessage.includes('agent') || lowerMessage.includes('human') || lowerMessage.includes('speak to someone')) {
-      return `I understand you'd like to speak with a human agent. Let me connect you with one of our customer service representatives. Please hold while I transfer you...`
-    }
-    
-    // General responses
-    if (lowerMessage.includes('hello') || lowerMessage.includes('hi')) {
-      return `Hello! I'm here to help you with your Levelpath Shoes needs. I can assist with order tracking, returns, store information, and more. What can I help you with today?`
+      return `Here are our current store hours and location:\n\n🕒 **Store Hours**:\n• Monday-Thursday: 9AM-8PM\n• Friday: 9AM-9PM\n• Saturday: 10AM-8PM\n• Sunday: 11AM-6PM\n\n📍 **Location**:\n789 Fashion Blvd\nSan Francisco, CA 94102\n\n📞 **Phone**: (555) 123-4567\n\nWe're also available 24/7 through this chat! Is there anything specific you'd like to know about visiting our store?`
     }
     
     if (lowerMessage.includes('shipping') || lowerMessage.includes('delivery')) {
-      return `We offer free shipping on orders over $100! Standard shipping is $9.99 for orders under $100 and takes 3-5 business days. Expedited shipping is available for $19.99 and takes 1-2 business days. Would you like to know more about our shipping options?`
+      return `Here are our shipping options:\n\n🚚 **Standard Shipping**:\n• Cost: $9.99 (Free on orders over $100)\n• Delivery: 3-5 business days\n• Available: All 50 states\n\n⚡ **Expedited Shipping**:\n• Cost: $19.99\n• Delivery: 1-2 business days\n• Available: Continental US\n\n🌍 **International Shipping**:\n• Available to select countries\n• Delivery: 7-14 business days\n• Customs fees may apply\n\nWould you like me to help you calculate shipping costs for a specific order?`
     }
     
     if (lowerMessage.includes('size') || lowerMessage.includes('fit')) {
-      return `Our shoes run true to size. If you're between sizes, I recommend sizing up. Each product page has a detailed size guide with measurements. You can also visit our store at 789 Fashion Blvd to try on shoes in person. Need help finding the right size for a specific product?`
+      return `I can help you find the perfect fit! Here's our sizing guidance:\n\n👟 **General Sizing**:\n• Our shoes run true to size\n• If between sizes, we recommend sizing up\n• Each product page has detailed measurements\n\n📏 **Size Chart Available**:\n• Length measurements in inches\n• Width options (Narrow, Regular, Wide)\n• European and UK size conversions\n\n🏪 **Try Before You Buy**:\n• Visit our store at 789 Fashion Blvd\n• Free in-store fitting service\n• Expert staff to help with sizing\n\nWhich product are you interested in? I can provide specific sizing recommendations.`
     }
     
-    // Default response
-    return `I understand you're asking about "${userMessage}". While I can help with order tracking, returns, store hours, and general questions, I might need to connect you with a human agent for more specific assistance. Would you like me to help with something else, or would you prefer to speak with a customer service representative?`
+    // Escalation for Twilio AI - only when truly necessary
+    if (lowerMessage.includes('agent') || lowerMessage.includes('human') || lowerMessage.includes('speak to someone')) {
+      return `I understand you'd like to speak with a human agent. While I can handle most questions about orders, returns, shipping, and products, I'm happy to connect you with a customer service representative for more complex issues. Let me transfer you now.`
+    }
+    
+    // Default response for Twilio AI - tries to help first
+    return `I understand you're asking about "${userMessage}". Let me help you with that. While I can assist with order tracking, returns, store information, shipping, and product questions, I might need to connect you with a human agent for more specific assistance. Could you provide more details about what you need help with?`
+  }
+
+  const getAIResponse = async (userMessage: string): Promise<string> => {
+    if (aiMode === 'basic') {
+      return await getBasicAIResponse(userMessage)
+    } else {
+      return await getTwilioAIResponse(userMessage)
+    }
   }
 
   const handleSendMessage = async () => {
@@ -166,7 +207,7 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
     setIsTyping(true)
 
     try {
-      const aiResponse = await simulateAIResponse(inputValue)
+      const aiResponse = await getAIResponse(inputValue)
       
       const assistantMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
@@ -190,6 +231,21 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
     }
   }
 
+  const toggleAIMode = () => {
+    const newMode = aiMode === 'basic' ? 'twilio' : 'basic'
+    setAiMode(newMode)
+    
+    // Add a system message when switching modes
+    const systemMessage: ChatMessage = {
+      id: Date.now().toString(),
+      content: `🔄 **Switched to ${newMode === 'basic' ? 'Basic AI' : 'Twilio AI Assistant'}**\n\n${newMode === 'basic' ? 'I\'m a basic AI with limited knowledge. I may need to connect you with a human agent for many questions.' : 'I\'m powered by Twilio AI Assistants with advanced Tools and Knowledge capabilities. I can help with most questions!'}`,
+      sender: 'assistant',
+      timestamp: new Date().toISOString(),
+    }
+    
+    setMessages(prev => [...prev, systemMessage])
+  }
+
   if (!isOpen) {
     return (
       <button
@@ -208,18 +264,40 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
         <div className="flex items-center space-x-2">
           <Bot className="h-5 w-5" />
           <div>
-            <h3 className="font-semibold">AI Assistant</h3>
+            <h3 className="font-semibold">
+              {aiMode === 'basic' ? 'Basic AI' : 'Twilio AI Assistant'}
+            </h3>
             <p className="text-xs text-primary-100">
-              {isConnected ? 'Twilio AI Assistant' : 'Demo Mode'}
+              {aiMode === 'basic' ? 'Limited capabilities' : 'Advanced AI with Tools & Knowledge'}
             </p>
           </div>
         </div>
-        <button
-          onClick={onClose}
-          className="text-white hover:text-primary-200 transition-colors duration-200"
-        >
-          <X className="h-5 w-5" />
-        </button>
+        <div className="flex items-center space-x-2">
+          {/* AI Mode Toggle */}
+          <button
+            onClick={toggleAIMode}
+            className="flex items-center space-x-1 bg-primary-700 hover:bg-primary-800 px-2 py-1 rounded text-xs transition-colors duration-200"
+            title={`Switch to ${aiMode === 'basic' ? 'Twilio AI' : 'Basic AI'}`}
+          >
+            {aiMode === 'basic' ? (
+              <>
+                <ToggleLeft className="h-3 w-3" />
+                <span>Basic</span>
+              </>
+            ) : (
+              <>
+                <ToggleRight className="h-3 w-3" />
+                <span>Twilio</span>
+              </>
+            )}
+          </button>
+          <button
+            onClick={onClose}
+            className="text-white hover:text-primary-200 transition-colors duration-200"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
       </div>
 
       {/* Messages */}
