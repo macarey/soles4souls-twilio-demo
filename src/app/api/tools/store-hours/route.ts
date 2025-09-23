@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
 
 function getCurrentStoreStatus() {
   const now = new Date()
-  const day = now.toLocaleLowerCase()
+  const day = now.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase()
   const hour = now.getHours()
   
   // Simple logic to determine if store is open
