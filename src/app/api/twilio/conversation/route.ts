@@ -29,7 +29,9 @@ export async function POST(request: NextRequest) {
       .conversations(conversation.sid)
       .participants
       .create({
-        'messagingBinding.identity': `assistant-${assistantSid}`,
+        messagingBinding: {
+          identity: `assistant-${assistantSid}`
+        },
         attributes: JSON.stringify({
           role: 'assistant',
           assistantSid
