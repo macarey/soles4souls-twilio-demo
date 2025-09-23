@@ -1,0 +1,136 @@
+import { Product, Order } from '@/types'
+
+export const mockProducts: Product[] = [
+  {
+    id: '1',
+    name: 'Levelpath Runner Pro',
+    price: 129.99,
+    image: '/images/runner-pro.jpg',
+    category: 'running',
+    description: 'Premium running shoes with advanced cushioning and breathable mesh upper.',
+    sizes: [7, 8, 9, 10, 11, 12],
+    colors: ['Black', 'White', 'Navy'],
+    inStock: true,
+  },
+  {
+    id: '2',
+    name: 'Classic Oxford',
+    price: 199.99,
+    image: '/images/oxford.jpg',
+    category: 'formal',
+    description: 'Handcrafted leather oxford shoes perfect for business and formal occasions.',
+    sizes: [7, 8, 9, 10, 11, 12],
+    colors: ['Black', 'Brown', 'Tan'],
+    inStock: true,
+  },
+  {
+    id: '3',
+    name: 'Urban Sneaker',
+    price: 89.99,
+    image: '/images/urban-sneaker.jpg',
+    category: 'casual',
+    description: 'Comfortable everyday sneakers with modern design and all-day comfort.',
+    sizes: [7, 8, 9, 10, 11, 12],
+    colors: ['White', 'Gray', 'Navy'],
+    inStock: true,
+  },
+  {
+    id: '4',
+    name: 'Athletic Performance',
+    price: 149.99,
+    image: '/images/athletic.jpg',
+    category: 'athletic',
+    description: 'High-performance athletic shoes designed for serious athletes.',
+    sizes: [7, 8, 9, 10, 11, 12],
+    colors: ['Red', 'Blue', 'Black'],
+    inStock: true,
+  },
+  {
+    id: '5',
+    name: 'Comfort Walker',
+    price: 79.99,
+    image: '/images/walker.jpg',
+    category: 'casual',
+    description: 'Comfortable walking shoes with extra cushioning for all-day wear.',
+    sizes: [7, 8, 9, 10, 11, 12],
+    colors: ['Black', 'White', 'Gray'],
+    inStock: true,
+  },
+  {
+    id: '6',
+    name: 'Business Loafers',
+    price: 179.99,
+    image: '/images/loafers.jpg',
+    category: 'formal',
+    description: 'Professional loafers perfect for the modern workplace.',
+    sizes: [7, 8, 9, 10, 11, 12],
+    colors: ['Black', 'Brown'],
+    inStock: true,
+  },
+]
+
+export const mockOrders: Order[] = [
+  {
+    id: 'ORD-001',
+    items: [
+      {
+        product: mockProducts[0],
+        quantity: 1,
+        size: 10,
+        color: 'Black',
+      },
+    ],
+    total: 129.99,
+    status: 'shipped',
+    orderDate: '2024-12-01',
+    shippingAddress: {
+      street: '123 Main St',
+      city: 'San Francisco',
+      state: 'CA',
+      zipCode: '94102',
+      country: 'USA',
+    },
+  },
+  {
+    id: 'ORD-002',
+    items: [
+      {
+        product: mockProducts[1],
+        quantity: 1,
+        size: 9,
+        color: 'Brown',
+      },
+    ],
+    total: 199.99,
+    status: 'delivered',
+    orderDate: '2024-11-28',
+    shippingAddress: {
+      street: '456 Oak Ave',
+      city: 'New York',
+      state: 'NY',
+      zipCode: '10001',
+      country: 'USA',
+    },
+  },
+]
+
+export const storeInfo = {
+  name: 'Levelpath Shoes',
+  hours: {
+    monday: '9:00 AM - 8:00 PM',
+    tuesday: '9:00 AM - 8:00 PM',
+    wednesday: '9:00 AM - 8:00 PM',
+    thursday: '9:00 AM - 8:00 PM',
+    friday: '9:00 AM - 9:00 PM',
+    saturday: '10:00 AM - 8:00 PM',
+    sunday: '11:00 AM - 6:00 PM',
+  },
+  phone: '(555) 123-4567',
+  email: 'support@levelpathshoes.com',
+  address: {
+    street: '789 Fashion Blvd',
+    city: 'San Francisco',
+    state: 'CA',
+    zipCode: '94102',
+  },
+}
