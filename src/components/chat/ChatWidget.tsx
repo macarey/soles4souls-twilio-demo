@@ -139,49 +139,18 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
   }
 
   const getTwilioAIResponse = async (userMessage: string): Promise<string> => {
-    // Try real Twilio integration first
+    // Only use real Twilio integration - no fallback to demo mode
     if (isConnected && conversationSid) {
       try {
         return await sendMessageToTwilio(userMessage)
       } catch (error) {
-        console.error('Twilio integration failed, falling back to enhanced demo mode:', error)
+        console.error('Twilio integration failed:', error)
+        throw new Error('Twilio integration failed')
       }
     }
 
-    // Enhanced demo simulation for Twilio AI
-    await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000))
-    
-    const lowerMessage = userMessage.toLowerCase()
-    
-    // Twilio AI - Advanced capabilities, intelligent responses
-    if (lowerMessage.includes('order') && (lowerMessage.includes('status') || lowerMessage.includes('track'))) {
-      const orderId = userMessage.match(/ORD-\d+/)?.[0] || 'ORD-001'
-      return `I found your order ${orderId}! Here are the details:\n\n📦 **Order Status**: Shipped\n🚚 **Tracking Number**: TRK-${orderId}\n📅 **Estimated Delivery**: December 25, 2024\n📍 **Current Location**: In transit from our warehouse\n\nYour order contains:\n• Levelpath Runner Pro (Size 10, Black) - $129.99\n\nYou can track your package using the tracking number above. Is there anything else I can help you with regarding this order?`
-    }
-    
-    if (lowerMessage.includes('return') || lowerMessage.includes('refund')) {
-      return `I can help you process a return! Here's what I can do for you:\n\n✅ **Return Eligibility**: 30-day return policy for unworn items\n📦 **Return Process**: I can generate a return label for you\n💰 **Refund Method**: Original payment method\n\nTo get started, I'll need your order ID. Once you provide it, I can:\n• Generate a prepaid return label\n• Email you return instructions\n• Process your refund once the item is received\n\nWhat's your order ID?`
-    }
-    
-    if (lowerMessage.includes('hours') || lowerMessage.includes('open') || lowerMessage.includes('close')) {
-      return `Here are our current store hours and location:\n\n🕒 **Store Hours**:\n• Monday-Thursday: 9AM-8PM\n• Friday: 9AM-9PM\n• Saturday: 10AM-8PM\n• Sunday: 11AM-6PM\n\n📍 **Location**:\n789 Fashion Blvd\nSan Francisco, CA 94102\n\n📞 **Phone**: (555) 123-4567\n\nWe're also available 24/7 through this chat! Is there anything specific you'd like to know about visiting our store?`
-    }
-    
-    if (lowerMessage.includes('shipping') || lowerMessage.includes('delivery')) {
-      return `Here are our shipping options:\n\n🚚 **Standard Shipping**:\n• Cost: $9.99 (Free on orders over $100)\n• Delivery: 3-5 business days\n• Available: All 50 states\n\n⚡ **Expedited Shipping**:\n• Cost: $19.99\n• Delivery: 1-2 business days\n• Available: Continental US\n\n🌍 **International Shipping**:\n• Available to select countries\n• Delivery: 7-14 business days\n• Customs fees may apply\n\nWould you like me to help you calculate shipping costs for a specific order?`
-    }
-    
-    if (lowerMessage.includes('size') || lowerMessage.includes('fit')) {
-      return `I can help you find the perfect fit! Here's our sizing guidance:\n\n👟 **General Sizing**:\n• Our shoes run true to size\n• If between sizes, we recommend sizing up\n• Each product page has detailed measurements\n\n📏 **Size Chart Available**:\n• Length measurements in inches\n• Width options (Narrow, Regular, Wide)\n• European and UK size conversions\n\n🏪 **Try Before You Buy**:\n• Visit our store at 789 Fashion Blvd\n• Free in-store fitting service\n• Expert staff to help with sizing\n\nWhich product are you interested in? I can provide specific sizing recommendations.`
-    }
-    
-    // Escalation for Twilio AI - only when truly necessary
-    if (lowerMessage.includes('agent') || lowerMessage.includes('human') || lowerMessage.includes('speak to someone')) {
-      return `I understand you'd like to speak with a human agent. While I can handle most questions about orders, returns, shipping, and products, I'm happy to connect you with a customer service representative for more complex issues. Let me transfer you now.`
-    }
-    
-    // Default response for Twilio AI - tries to help first
-    return `I understand you're asking about "${userMessage}". Let me help you with that. While I can assist with order tracking, returns, store information, shipping, and product questions, I might need to connect you with a human agent for more specific assistance. Could you provide more details about what you need help with?`
+    // If not connected, throw error instead of falling back
+    throw new Error('Not connected to Twilio AI Assistant')
   }
 
   const getAIResponse = async (userMessage: string): Promise<string> => {
@@ -219,6 +188,16 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
       setMessages(prev => [...prev, assistantMessage])
     } catch (error) {
       console.error('Error getting AI response:', error)
+      
+      // Show error message in chat instead of silent failure
+      const errorMessage: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        content: `❌ **Error**: ${error instanceof Error ? error.message : 'An unexpected error occurred'}`,
+        sender: 'assistant',
+        timestamp: new Date().toISOString(),
+      }
+      
+      setMessages(prev => [...prev, errorMessage])
     } finally {
       setIsTyping(false)
     }

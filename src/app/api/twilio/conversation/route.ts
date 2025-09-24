@@ -104,13 +104,12 @@ export async function POST(request: NextRequest) {
     } catch (error) {
       console.error('Error sending message to Twilio:', error)
       
-      // Fallback to demo mode if Twilio fails
-      const response = await processUserMessage(message)
+      // Return error message instead of falling back to demo mode
       return NextResponse.json({
         conversationSid: conversationSid || `demo-conversation-${Date.now()}`,
-        status: 'demo_mode',
-        response: response,
-        error: 'Twilio API failed, using demo mode'
+        status: 'error',
+        response: `❌ **Twilio Integration Error**\n\nI'm unable to connect to the Twilio AI Assistant at the moment. This could be due to:\n\n• Missing or invalid Twilio credentials\n• Network connectivity issues\n• Twilio service temporarily unavailable\n\nPlease check your Twilio configuration and try again. If the problem persists, contact your system administrator.`,
+        error: 'Twilio API failed'
       })
     }
 
@@ -123,52 +122,6 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Fallback demo function for when Twilio is not available
-async function processUserMessage(userMessage: string): Promise<string> {
-  // Simulate processing time
-  await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000))
-  
-  const lowerMessage = userMessage.toLowerCase()
-  
-  // Twilio AI - Advanced capabilities, intelligent responses
-  // More flexible order tracking patterns
-  if (lowerMessage.includes('order') && (
-    lowerMessage.includes('status') || 
-    lowerMessage.includes('track') || 
-    lowerMessage.includes('where') || 
-    lowerMessage.includes('location') ||
-    lowerMessage.includes('shipped') ||
-    lowerMessage.includes('delivered') ||
-    lowerMessage.includes('delivery')
-  )) {
-    const orderId = userMessage.match(/ORD-\d+/)?.[0] || 'ORD-001'
-    return `I found your order ${orderId}! Here are the details:\n\n📦 **Order Status**: Shipped\n🚚 **Tracking Number**: TRK-${orderId}\n📅 **Estimated Delivery**: December 25, 2024\n📍 **Current Location**: In transit from our warehouse\n\nYour order contains:\n• Levelpath Runner Pro (Size 10, Black) - $129.99\n\nIs there anything else I can help you with regarding this order?`
-  }
-  
-  if (lowerMessage.includes('return') || lowerMessage.includes('refund')) {
-    return `I can help you process a return! Here's what I can do for you:\n\n✅ **Return Eligibility**: 30-day return policy for unworn items\n📦 **Return Process**: I can generate a return label for you\n💰 **Refund Method**: Original payment method\n\nTo get started, I'll need your order ID. Once you provide it, I can:\n• Generate a prepaid return label\n• Email you return instructions\n• Process your refund once the item is received\n\nWhat's your order ID?`
-  }
-  
-  if (lowerMessage.includes('hours') || lowerMessage.includes('open') || lowerMessage.includes('close')) {
-    return `Here are our current store hours and location:\n\n🕒 **Store Hours**:\n• Monday-Thursday: 9AM-8PM\n• Friday: 9AM-9PM\n• Saturday: 10AM-8PM\n• Sunday: 11AM-6PM\n\n📍 **Location**:\n789 Fashion Blvd\nSan Francisco, CA 94102\n\n📞 **Phone**: (555) 123-4567\n\nWe're also available 24/7 through this chat! Is there anything specific you'd like to know about visiting our store?`
-  }
-  
-  if (lowerMessage.includes('shipping') || lowerMessage.includes('delivery')) {
-    return `Here are our shipping options:\n\n🚚 **Standard Shipping**:\n• Cost: $9.99 (Free on orders over $100)\n• Delivery: 3-5 business days\n• Available: All 50 states\n\n⚡ **Expedited Shipping**:\n• Cost: $19.99\n• Delivery: 1-2 business days\n• Available: Continental US\n\n🌍 **International Shipping**:\n• Available to select countries\n• Delivery: 7-14 business days\n• Customs fees may apply\n\nWould you like me to help you calculate shipping costs for a specific order?`
-  }
-  
-  if (lowerMessage.includes('size') || lowerMessage.includes('fit')) {
-    return `I can help you find the perfect fit! Here's our sizing guidance:\n\n👟 **General Sizing**:\n• Our shoes run true to size\n• If between sizes, we recommend sizing up\n• Each product page has a detailed size guide with measurements\n\n📏 **Size Chart Available**:\n• Length measurements in inches\n• Width options (Narrow, Regular, Wide)\n• European and UK size conversions\n\n🏪 **Try Before You Buy**:\n• Visit our store at 789 Fashion Blvd\n• Free in-store fitting service\n• Expert staff to help with sizing\n\nWhich product are you interested in? I can provide specific sizing recommendations.`
-  }
-  
-  // Escalation for Twilio AI - only when truly necessary
-  if (lowerMessage.includes('agent') || lowerMessage.includes('human') || lowerMessage.includes('speak to someone')) {
-    return `I understand you'd like to speak with a human agent. While I can handle most questions about orders, returns, shipping, and products, I'm happy to connect you with a customer service representative for more complex issues. Let me transfer you now.`
-  }
-  
-  // Default response for Twilio AI - tries to help first
-  return `I understand you're asking about "${userMessage}". Let me help you with that. While I can assist with order tracking, returns, store information, shipping, and product questions, I might need to connect you with a human agent for more specific assistance. Could you provide more details about what you need help with?`
-}
 
 export async function GET(request: NextRequest) {
   try {
