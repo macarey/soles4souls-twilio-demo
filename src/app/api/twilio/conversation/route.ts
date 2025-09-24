@@ -32,6 +32,7 @@ export async function POST(request: NextRequest) {
     if (!message) {
       try {
         // Create a new conversation with Twilio
+        console.log('🔄 Creating Twilio conversation with assistantSid:', assistantSid)
         const conversation = await client.conversations.v1.conversations.create({
           friendlyName: 'Levelpath Shoes Customer Support',
           attributes: JSON.stringify({
@@ -39,6 +40,12 @@ export async function POST(request: NextRequest) {
             customerType: 'web',
             timestamp: new Date().toISOString()
           })
+        })
+
+        console.log('✅ Conversation created successfully:', {
+          sid: conversation.sid,
+          friendlyName: conversation.friendlyName,
+          status: conversation.state
         })
 
         return NextResponse.json({
@@ -62,6 +69,12 @@ export async function POST(request: NextRequest) {
       }
 
       // Send message to the conversation
+      console.log('📤 Sending message to Twilio conversation:', {
+        conversationSid,
+        message,
+        author: 'customer'
+      })
+
       const messageResponse = await client.conversations.v1
         .conversations(conversationSid)
         .messages
@@ -70,12 +83,20 @@ export async function POST(request: NextRequest) {
           author: 'customer'
         })
 
+      console.log('✅ Message sent successfully:', {
+        messageSid: messageResponse.sid,
+        body: messageResponse.body,
+        author: messageResponse.author,
+        dateCreated: messageResponse.dateCreated
+      })
+
       // Wait for the AI Assistant to respond via webhook
       // We'll poll for the response since the webhook will trigger the AI Assistant
       let attempts = 0
       const maxAttempts = 10
       
       while (attempts < maxAttempts) {
+        console.log(`🔍 Polling attempt ${attempts + 1}/${maxAttempts}`)
         await new Promise(resolve => setTimeout(resolve, 1000)) // Wait 1 second
         
         // Get the latest messages from the conversation
@@ -83,6 +104,13 @@ export async function POST(request: NextRequest) {
           .conversations(conversationSid)
           .messages
           .list({ limit: 10 })
+
+        console.log('📋 Current messages in conversation:', messages.map(msg => ({
+          sid: msg.sid,
+          author: msg.author,
+          body: msg.body?.substring(0, 50) + '...',
+          dateCreated: msg.dateCreated
+        })))
 
         // Find the latest assistant message (after our message)
         const assistantMessages = messages
@@ -93,6 +121,13 @@ export async function POST(request: NextRequest) {
           .sort((a, b) => new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime())
 
         if (assistantMessages.length > 0) {
+          console.log('🎉 AI Assistant responded:', {
+            messageSid: assistantMessages[0].sid,
+            body: assistantMessages[0].body,
+            author: assistantMessages[0].author,
+            dateCreated: assistantMessages[0].dateCreated
+          })
+          
           return NextResponse.json({
             conversationSid,
             status: 'active',
@@ -102,6 +137,8 @@ export async function POST(request: NextRequest) {
         
         attempts++
       }
+      
+      console.log('⏰ Polling timeout - no AI response received after', maxAttempts, 'attempts')
 
       // If no response after max attempts, return a waiting message
       return NextResponse.json({

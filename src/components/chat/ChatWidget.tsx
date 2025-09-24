@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Send, X, MessageCircle, Bot, User, Phone, ToggleLeft, ToggleRight } from 'lucide-react'
 import { ChatMessage } from '@/types'
+import { Client, Conversation } from '@twilio/conversations'
 
 interface ChatWidgetProps {
   isOpen: boolean
@@ -22,9 +23,10 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
   ])
   const [inputValue, setInputValue] = useState('')
   const [isTyping, setIsTyping] = useState(false)
-  const [conversationSid, setConversationSid] = useState<string | null>(null)
-  const [isConnected, setIsConnected] = useState(false)
   const [aiMode, setAiMode] = useState<AIMode>('basic')
+  const [connectionState, setConnectionState] = useState<string>('disconnected')
+  const [conversation, setConversation] = useState<Conversation | null>(null)
+  const [client, setClient] = useState<Client | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const scrollToBottom = () => {
@@ -35,69 +37,97 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
     scrollToBottom()
   }, [messages])
 
-  // Initialize Twilio conversation when chat opens and mode is Twilio
+  // Initialize Twilio Conversations SDK when chat opens and mode is Twilio
   useEffect(() => {
-    if (isOpen && !conversationSid && aiMode === 'twilio') {
-      initializeConversation()
+    if (isOpen && aiMode === 'twilio' && !client) {
+      initializeTwilioSDK()
     }
-  }, [isOpen, conversationSid, aiMode])
+  }, [isOpen, aiMode, client])
 
-  const initializeConversation = async () => {
+  const initializeTwilioSDK = async () => {
     try {
-      const response = await fetch('/api/twilio/conversation', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          assistantSid: process.env.NEXT_PUBLIC_TWILIO_AI_ASSISTANT_SID || 'demo-assistant'
-        })
-      })
+      console.log('🚀 Initializing Twilio Conversations SDK...')
       
-      if (response.ok) {
-        const data = await response.json()
-        setConversationSid(data.conversationSid)
-        setIsConnected(true)
-      } else {
-        console.error('Failed to initialize conversation')
-        // Fallback to demo mode
-        setIsConnected(false)
-      }
-    } catch (error) {
-      console.error('Error initializing conversation:', error)
-      // Fallback to demo mode
-      setIsConnected(false)
-    }
-  }
-
-  const sendMessageToTwilio = async (message: string): Promise<string> => {
-    if (!conversationSid) {
-      throw new Error('No active conversation')
-    }
-
-    try {
-      // Send message to Twilio conversation
-      const response = await fetch('/api/twilio/conversation', {
+      // Get access token
+      const tokenResponse = await fetch('/api/twilio/token', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          conversationSid,
-          message,
-          type: 'user_message'
+          username: 'user00',
+          password: 'lets-converse'
         })
       })
 
-      if (response.ok) {
-        const data = await response.json()
-        return data.response || 'I received your message and I\'m processing it.'
-      } else {
-        throw new Error('Failed to send message')
+      if (!tokenResponse.ok) {
+        const errorData = await tokenResponse.json()
+        throw new Error(errorData.error || 'Failed to get access token')
       }
+
+      const { token, identity } = await tokenResponse.json()
+      console.log('✅ Access token received for identity:', identity)
+
+      // Initialize Conversations client
+      const conversationsClient = new Client(token)
+      setClient(conversationsClient)
+
+      // Set up event listeners
+      conversationsClient.on('connectionStateChanged', (state) => {
+        console.log('🔗 Connection state changed:', state)
+        setConnectionState(state)
+      })
+
+      conversationsClient.on('conversationJoined', (conversation) => {
+        console.log('💬 Joined conversation:', conversation.sid)
+        setConversation(conversation)
+        
+        // Set up conversation event listeners
+        conversation.on('messageAdded', (message) => {
+          console.log('📨 New message received:', {
+            sid: message.sid,
+            author: message.author,
+            body: message.body
+          })
+
+          const newMessage: ChatMessage = {
+            id: message.sid,
+            content: message.body || '',
+            sender: message.author === 'assistant' ? 'assistant' : 'user',
+            timestamp: message.dateCreated?.toISOString() || new Date().toISOString(),
+          }
+
+          setMessages(prev => [...prev, newMessage])
+        })
+
+        // Load existing messages
+        conversation.getMessages().then((existingMessages) => {
+          console.log('📋 Loading existing messages:', existingMessages.length)
+          const formattedMessages = existingMessages.map(msg => ({
+            id: msg.sid,
+            content: msg.body || '',
+            sender: msg.author === 'assistant' ? 'assistant' : 'user',
+            timestamp: msg.dateCreated?.toISOString() || new Date().toISOString(),
+          }))
+          setMessages(prev => [...prev, ...formattedMessages])
+        })
+      })
+
+      // Connect to the client
+      await conversationsClient.connect()
+      console.log('✅ Twilio Conversations client connected')
+
     } catch (error) {
-      console.error('Error sending message to Twilio:', error)
-      throw error
+      console.error('❌ Error initializing Twilio SDK:', error)
+      
+      const errorMessage: ChatMessage = {
+        id: Date.now().toString(),
+        content: `❌ **Twilio SDK Error**: ${error instanceof Error ? error.message : 'Failed to initialize Twilio Conversations SDK'}`,
+        sender: 'assistant',
+        timestamp: new Date().toISOString(),
+      }
+      
+      setMessages(prev => [...prev, errorMessage])
     }
   }
 
@@ -138,29 +168,6 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
     return `I understand you're asking about "${userMessage}". I'm still learning and don't have enough information to help you with this specific question. Let me connect you with a customer service representative who can provide you with the assistance you need.`
   }
 
-  const getTwilioAIResponse = async (userMessage: string): Promise<string> => {
-    // Only use real Twilio integration - no fallback to demo mode
-    if (isConnected && conversationSid) {
-      try {
-        return await sendMessageToTwilio(userMessage)
-      } catch (error) {
-        console.error('Twilio integration failed:', error)
-        throw new Error('Twilio integration failed')
-      }
-    }
-
-    // If not connected, throw error instead of falling back
-    throw new Error('Not connected to Twilio AI Assistant')
-  }
-
-  const getAIResponse = async (userMessage: string): Promise<string> => {
-    if (aiMode === 'basic') {
-      return await getBasicAIResponse(userMessage)
-    } else {
-      return await getTwilioAIResponse(userMessage)
-    }
-  }
-
   const handleSendMessage = async () => {
     if (!inputValue.trim()) return
 
@@ -172,24 +179,36 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
     }
 
     setMessages(prev => [...prev, userMessage])
+    const messageToSend = inputValue
     setInputValue('')
     setIsTyping(true)
 
     try {
-      const aiResponse = await getAIResponse(inputValue)
-      
-      const assistantMessage: ChatMessage = {
-        id: (Date.now() + 1).toString(),
-        content: aiResponse,
-        sender: 'assistant',
-        timestamp: new Date().toISOString(),
-      }
+      if (aiMode === 'basic') {
+        // Use basic AI response
+        const aiResponse = await getBasicAIResponse(messageToSend)
+        
+        const assistantMessage: ChatMessage = {
+          id: (Date.now() + 1).toString(),
+          content: aiResponse,
+          sender: 'assistant',
+          timestamp: new Date().toISOString(),
+        }
 
-      setMessages(prev => [...prev, assistantMessage])
+        setMessages(prev => [...prev, assistantMessage])
+      } else {
+        // Use Twilio Conversations SDK
+        if (conversation) {
+          console.log('📤 Sending message via Twilio SDK:', messageToSend)
+          await conversation.sendMessage(messageToSend)
+          console.log('✅ Message sent via Twilio SDK')
+        } else {
+          throw new Error('No active conversation')
+        }
+      }
     } catch (error) {
-      console.error('Error getting AI response:', error)
+      console.error('Error sending message:', error)
       
-      // Show error message in chat instead of silent failure
       const errorMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         content: `❌ **Error**: ${error instanceof Error ? error.message : 'An unexpected error occurred'}`,
@@ -214,6 +233,16 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
     const newMode = aiMode === 'basic' ? 'twilio' : 'basic'
     setAiMode(newMode)
     
+    // Reset SDK state when switching modes
+    if (newMode === 'basic') {
+      if (client) {
+        client.disconnect()
+        setClient(null)
+        setConversation(null)
+        setConnectionState('disconnected')
+      }
+    }
+    
     // Add a system message when switching modes
     const systemMessage: ChatMessage = {
       id: Date.now().toString(),
@@ -224,6 +253,15 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
     
     setMessages(prev => [...prev, systemMessage])
   }
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (client) {
+        client.disconnect()
+      }
+    }
+  }, [client])
 
   if (!isOpen) {
     return (
@@ -247,7 +285,7 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
               {aiMode === 'basic' ? 'Basic AI' : 'Twilio AI Assistant'}
             </h3>
             <p className="text-xs text-primary-100">
-              {aiMode === 'basic' ? 'Limited capabilities' : 'Advanced AI with Tools & Knowledge'}
+              {aiMode === 'basic' ? 'Limited capabilities' : `Advanced AI (${connectionState})`}
             </p>
           </div>
         </div>
@@ -284,96 +322,55 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
         {messages.map((message) => (
           <div
             key={message.id}
-            className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+            className={`flex ${
+              message.sender === 'user' ? 'justify-end' : 'justify-start'
+            }`}
           >
             <div
-              className={`max-w-[80%] p-3 rounded-lg ${
+              className={`max-w-[70%] p-3 rounded-lg shadow-md ${
                 message.sender === 'user'
-                  ? 'bg-primary-600 text-white'
-                  : 'bg-gray-100 text-gray-900'
+                  ? 'bg-primary-500 text-white rounded-br-none'
+                  : 'bg-gray-100 text-gray-800 rounded-bl-none'
               }`}
             >
-              <div className="flex items-start space-x-2">
-                {message.sender === 'assistant' && (
-                  <Bot className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                )}
-                {message.sender === 'user' && (
-                  <User className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                )}
-                <div className="flex-1">
-                  <p className="text-sm whitespace-pre-wrap">{message.content}</p>
-                  <p className="text-xs opacity-70 mt-1">
-                    {new Date(message.timestamp).toLocaleTimeString([], { 
-                      hour: '2-digit', 
-                      minute: '2-digit' 
-                    })}
-                  </p>
-                </div>
-              </div>
+              <p className="text-sm">{message.content}</p>
+              <span className="block text-right text-xs mt-1 opacity-75">
+                {new Date(message.timestamp).toLocaleTimeString([], {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}
+              </span>
             </div>
           </div>
         ))}
-        
         {isTyping && (
           <div className="flex justify-start">
-            <div className="bg-gray-100 text-gray-900 p-3 rounded-lg">
-              <div className="flex items-center space-x-2">
-                <Bot className="h-4 w-4" />
-                <div className="flex space-x-1">
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                </div>
-              </div>
+            <div className="max-w-[70%] p-3 rounded-lg shadow-md bg-gray-100 text-gray-800 rounded-bl-none">
+              <p className="text-sm animate-pulse">AI Assistant is typing...</p>
             </div>
           </div>
         )}
-        
         <div ref={messagesEndRef} />
       </div>
 
       {/* Input */}
-      <div className="p-4 border-t border-gray-200">
-        <div className="flex space-x-2">
-          <input
-            type="text"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Type your message..."
-            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
-            disabled={isTyping}
-          />
-          <button
-            onClick={handleSendMessage}
-            disabled={!inputValue.trim() || isTyping}
-            className="bg-primary-600 text-white p-2 rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
-          >
-            <Send className="h-4 w-4" />
-          </button>
-        </div>
-        
-        {/* Quick Actions */}
-        <div className="mt-3 flex flex-wrap gap-2">
-          <button
-            onClick={() => setInputValue('Where is my order?')}
-            className="text-xs bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded transition-colors duration-200"
-          >
-            Track Order
-          </button>
-          <button
-            onClick={() => setInputValue('I want to return my shoes')}
-            className="text-xs bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded transition-colors duration-200"
-          >
-            Start Return
-          </button>
-          <button
-            onClick={() => setInputValue('What are your store hours?')}
-            className="text-xs bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded transition-colors duration-200"
-          >
-            Store Hours
-          </button>
-        </div>
+      <div className="border-t border-gray-200 p-4 flex items-center">
+        <input
+          type="text"
+          placeholder="Type your message..."
+          className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          onKeyPress={handleKeyPress}
+          disabled={isTyping}
+        />
+        <button
+          onClick={handleSendMessage}
+          className="ml-3 bg-primary-600 text-white p-3 rounded-full hover:bg-primary-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={isTyping || !inputValue.trim()}
+        >
+          <Send className="h-5 w-5" />
+        </button>
       </div>
     </div>
   )
