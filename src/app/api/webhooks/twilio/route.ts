@@ -77,54 +77,44 @@ async function processAssistantMessage(message: string): Promise<string> {
 }
 
 async function executeTool(toolName: string, parameters: any): Promise<any> {
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://levelpath-shoes-demo.vercel.app'
+  
   switch (toolName) {
     case 'order_lookup':
-      return await lookupOrder(parameters.order_id)
+      return await callToolEndpoint(`${baseUrl}/api/tools/order-lookup`, { order_id: parameters.order_id })
     case 'return_request':
-      return await processReturn(parameters.order_id, parameters.reason)
+      return await callToolEndpoint(`${baseUrl}/api/tools/return-request`, { 
+        order_id: parameters.order_id, 
+        reason: parameters.reason 
+      })
     case 'store_hours':
-      return await getStoreHours()
+      return await callToolEndpoint(`${baseUrl}/api/tools/store-hours`, {})
+    case 'gift_card':
+      return await callToolEndpoint(`${baseUrl}/api/tools/gift-card`, parameters)
     default:
       throw new Error(`Unknown tool: ${toolName}`)
   }
 }
 
-async function lookupOrder(orderId: string) {
-  // Simulate order lookup
-  return {
-    orderId,
-    status: 'shipped',
-    trackingNumber: `TRK-${orderId}`,
-    estimatedDelivery: '2024-12-25',
-    items: ['Levelpath Runner Pro (Size 10, Black)'],
-    total: 129.99
+async function callToolEndpoint(url: string, data: any): Promise<any> {
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data)
+    })
+    
+    if (!response.ok) {
+      throw new Error(`Tool endpoint returned ${response.status}: ${response.statusText}`)
+    }
+    
+    const result = await response.json()
+    return result
+  } catch (error) {
+    console.error(`Error calling tool endpoint ${url}:`, error)
+    throw error
   }
 }
 
-async function processReturn(orderId: string, reason: string) {
-  // Simulate return processing
-  return {
-    returnId: `RET-${Date.now()}`,
-    orderId,
-    reason,
-    status: 'processing',
-    returnLabel: `https://levelpathshoes.com/return-label/${orderId}`,
-    instructions: 'Package items in original packaging and attach the return label.'
-  }
-}
-
-async function getStoreHours() {
-  return {
-    hours: {
-      monday: '9:00 AM - 8:00 PM',
-      tuesday: '9:00 AM - 8:00 PM',
-      wednesday: '9:00 AM - 8:00 PM',
-      thursday: '9:00 AM - 8:00 PM',
-      friday: '9:00 AM - 9:00 PM',
-      saturday: '10:00 AM - 8:00 PM',
-      sunday: '11:00 AM - 6:00 PM'
-    },
-    address: '789 Fashion Blvd, San Francisco, CA 94102',
-    phone: '(555) 123-4567'
-  }
-}

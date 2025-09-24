@@ -15,6 +15,7 @@ This guide explains how to configure the Tools in Twilio AI Assistant Console fo
 - **Order Lookup**: `/api/tools/order-lookup`
 - **Return Request**: `/api/tools/return-request`  
 - **Store Hours**: `/api/tools/store-hours`
+- **Gift Card**: `/api/tools/gift-card`
 
 ## Tool Configuration in Twilio Console
 
@@ -38,7 +39,7 @@ This guide explains how to configure the Tools in Twilio AI Assistant Console fo
 }
 ```
 
-**Webhook URL**: `https://your-domain.com/api/tools/order-lookup`
+**Webhook URL**: `https://levelpath-shoes-demo.vercel.app/api/tools/order-lookup`
 
 **Example Usage**:
 - Customer: "Where is my order ORD-001?"
@@ -69,7 +70,7 @@ This guide explains how to configure the Tools in Twilio AI Assistant Console fo
 }
 ```
 
-**Webhook URL**: `https://your-domain.com/api/tools/return-request`
+**Webhook URL**: `https://levelpath-shoes-demo.vercel.app/api/tools/return-request`
 
 **Example Usage**:
 - Customer: "I want to return my shoes because they're too small"
@@ -91,12 +92,64 @@ This guide explains how to configure the Tools in Twilio AI Assistant Console fo
 }
 ```
 
-**Webhook URL**: `https://your-domain.com/api/tools/store-hours`
+**Webhook URL**: `https://levelpath-shoes-demo.vercel.app/api/tools/store-hours`
 
 **Example Usage**:
 - Customer: "What are your store hours?"
 - AI calls tool with: `{}`
 - Returns store hours, location, phone, current status
+
+### 4. Gift Card Tool
+
+**Tool Name**: `gift_card`
+
+**Description**: Check gift card balance, purchase new gift cards, or redeem gift cards
+
+**Parameters Schema**:
+```json
+{
+  "type": "object",
+  "properties": {
+    "action": {
+      "type": "string",
+      "enum": ["check_balance", "purchase", "redeem"],
+      "description": "The action to perform: check_balance, purchase, or redeem"
+    },
+    "cardNumber": {
+      "type": "string",
+      "description": "Gift card number (required for check_balance and redeem)"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Amount for purchase or redemption"
+    },
+    "recipientEmail": {
+      "type": "string",
+      "description": "Recipient email for gift card purchase"
+    },
+    "purchaserEmail": {
+      "type": "string",
+      "description": "Purchaser email for gift card purchase"
+    }
+  },
+  "required": ["action"]
+}
+```
+
+**Webhook URL**: `https://levelpath-shoes-demo.vercel.app/api/tools/gift-card`
+
+**Example Usage**:
+- Customer: "What's the balance on my gift card GC-1234-5678-9012?"
+- AI calls tool with: `{"action": "check_balance", "cardNumber": "GC-1234-5678-9012"}`
+- Returns balance, expiry date, status
+
+- Customer: "I want to buy a $50 gift card for my friend"
+- AI calls tool with: `{"action": "purchase", "amount": 50, "recipientEmail": "friend@email.com"}`
+- Returns new gift card details and delivery info
+
+- Customer: "I want to redeem $25 from my gift card"
+- AI calls tool with: `{"action": "redeem", "cardNumber": "GC-1234-5678-9012", "amount": 25}`
+- Returns redemption confirmation and remaining balance
 
 ## Data Sources
 
@@ -142,49 +195,76 @@ This guide explains how to configure the Tools in Twilio AI Assistant Console fo
 - **Name**: `order_lookup`
 - **Description**: `Look up order status and details by order ID`
 - **Parameters**: (paste the JSON schema above)
-- **Webhook URL**: `https://your-domain.com/api/tools/order-lookup`
+- **Webhook URL**: `https://levelpath-shoes-demo.vercel.app/api/tools/order-lookup`
 
 #### Return Request Tool:
 - **Name**: `return_request`
 - **Description**: `Process return requests for orders`
 - **Parameters**: (paste the JSON schema above)
-- **Webhook URL**: `https://your-domain.com/api/tools/return-request`
+- **Webhook URL**: `https://levelpath-shoes-demo.vercel.app/api/tools/return-request`
 
 #### Store Hours Tool:
 - **Name**: `store_hours`
 - **Description**: `Get current store hours and location information`
 - **Parameters**: (paste the JSON schema above)
-- **Webhook URL**: `https://your-domain.com/api/tools/store-hours`
+- **Webhook URL**: `https://levelpath-shoes-demo.vercel.app/api/tools/store-hours`
+
+#### Gift Card Tool:
+- **Name**: `gift_card`
+- **Description**: `Check gift card balance, purchase new gift cards, or redeem gift cards`
+- **Parameters**: (paste the JSON schema above)
+- **Webhook URL**: `https://levelpath-shoes-demo.vercel.app/api/tools/gift-card`
 
 ### 2. Configure Webhook URLs
 
 Update your `.env.local`:
 ```bash
-TWILIO_WEBHOOK_URL=https://your-domain.com/api/webhooks/twilio
-NEXT_PUBLIC_APP_URL=https://your-domain.com
+TWILIO_WEBHOOK_URL=https://levelpath-shoes-demo.vercel.app/api/webhooks/twilio
+NEXT_PUBLIC_APP_URL=https://levelpath-shoes-demo.vercel.app
 ```
 
 ### 3. Test Tool Integration
 
 #### Test Order Lookup:
 ```bash
-curl -X POST https://your-domain.com/api/tools/order-lookup \
+curl -X POST https://levelpath-shoes-demo.vercel.app/api/tools/order-lookup \
   -H "Content-Type: application/json" \
   -d '{"order_id": "ORD-001"}'
 ```
 
 #### Test Return Request:
 ```bash
-curl -X POST https://your-domain.com/api/tools/return-request \
+curl -X POST https://levelpath-shoes-demo.vercel.app/api/tools/return-request \
   -H "Content-Type: application/json" \
   -d '{"order_id": "ORD-001", "reason": "too small"}'
 ```
 
 #### Test Store Hours:
 ```bash
-curl -X POST https://your-domain.com/api/tools/store-hours \
+curl -X POST https://levelpath-shoes-demo.vercel.app/api/tools/store-hours \
   -H "Content-Type: application/json" \
   -d '{}'
+```
+
+#### Test Gift Card Balance Check:
+```bash
+curl -X POST https://levelpath-shoes-demo.vercel.app/api/tools/gift-card \
+  -H "Content-Type: application/json" \
+  -d '{"action": "check_balance", "cardNumber": "GC-1234-5678-9012"}'
+```
+
+#### Test Gift Card Purchase:
+```bash
+curl -X POST https://levelpath-shoes-demo.vercel.app/api/tools/gift-card \
+  -H "Content-Type: application/json" \
+  -d '{"action": "purchase", "amount": 50, "recipientEmail": "friend@email.com"}'
+```
+
+#### Test Gift Card Redemption:
+```bash
+curl -X POST https://levelpath-shoes-demo.vercel.app/api/tools/gift-card \
+  -H "Content-Type: application/json" \
+  -d '{"action": "redeem", "cardNumber": "GC-1234-5678-9012", "amount": 25}'
 ```
 
 ## Demo Scenarios
@@ -213,6 +293,21 @@ curl -X POST https://your-domain.com/api/tools/store-hours \
 2. Calls `store_hours` tool
 3. Receives current hours and location
 4. Provides comprehensive store information
+
+### Scenario 4: Gift Card Management
+**Customer**: "What's the balance on my gift card GC-1234-5678-9012?"
+**AI Process**:
+1. Recognizes gift card balance query
+2. Calls `gift_card` tool with `{"action": "check_balance", "cardNumber": "GC-1234-5678-9012"}`
+3. Receives balance, expiry date, and status
+4. Provides detailed gift card information
+
+**Customer**: "I want to buy a $50 gift card for my friend"
+**AI Process**:
+1. Recognizes gift card purchase intent
+2. Calls `gift_card` tool with `{"action": "purchase", "amount": 50, "recipientEmail": "friend@email.com"}`
+3. Receives new gift card details and delivery info
+4. Guides customer through gift card purchase process
 
 ## Production Considerations
 
