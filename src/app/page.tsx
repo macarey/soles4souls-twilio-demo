@@ -123,7 +123,16 @@ export default function HomePage() {
             {filteredProducts.map((product) => (
               <div key={product.id} className="card hover:shadow-lg transition-shadow duration-200">
                 <div className="aspect-w-1 aspect-h-1 bg-gray-200 rounded-lg mb-4 overflow-hidden">
-                  <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
+                  <img 
+                    src={product.image} 
+                    alt={product.name}
+                    className="w-full h-48 object-cover"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none'
+                      e.currentTarget.nextElementSibling.style.display = 'flex'
+                    }}
+                  />
+                  <div className="w-full h-48 bg-gray-200 flex items-center justify-center" style={{display: 'none'}}>
                     <span className="text-gray-400 text-sm">Product Image</span>
                   </div>
                 </div>

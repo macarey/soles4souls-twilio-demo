@@ -41,6 +41,15 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
 
   // Initialize Twilio Conversations SDK when chat opens and mode is Twilio
   useEffect(() => {
+    console.log('🔍 useEffect triggered:', {
+      isOpen,
+      aiMode,
+      hasClient: !!client,
+      hasConversation: !!conversation,
+      isInitializing,
+      shouldInitialize: isOpen && aiMode === 'twilio' && !client && !conversation && !isInitializing
+    })
+    
     if (isOpen && aiMode === 'twilio' && !client && !conversation && !isInitializing) {
       console.log('🚀 Initializing Twilio SDK for the first time...')
       initializeTwilioSDK()
@@ -109,22 +118,33 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
       
       // First, create conversation via our REST API
       console.log('📡 Calling /api/twilio/conversation to create conversation...')
+      console.log('📋 Assistant SID being sent:', process.env.NEXT_PUBLIC_TWILIO_AI_ASSISTANT_SID)
+      console.log('📋 Environment check:', {
+        hasAssistantSid: !!process.env.NEXT_PUBLIC_TWILIO_AI_ASSISTANT_SID,
+        assistantSidValue: process.env.NEXT_PUBLIC_TWILIO_AI_ASSISTANT_SID
+      })
+      
       const conversationResponse = await fetch('/api/twilio/conversation', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          assistantSid: process.env.NEXT_PUBLIC_TWILIO_AI_ASSISTANT_SID
+          assistantSid: process.env.NEXT_PUBLIC_TWILIO_AI_ASSISTANT_SID || 'aia_asst_01997766-7285-7a77-b289-294ef8db7c19'
         })
       })
+      
+      console.log('📡 Conversation API response status:', conversationResponse.status)
 
       if (!conversationResponse.ok) {
         const errorData = await conversationResponse.json()
         throw new Error(errorData.error || 'Failed to create conversation via API')
       }
 
-      const { conversationSid } = await conversationResponse.json()
+      const conversationData = await conversationResponse.json()
+      console.log('📋 Full conversation API response:', conversationData)
+      
+      const { conversationSid } = conversationData
       console.log('✅ Conversation created via API:', conversationSid)
       console.log('🔍 Conversation SID format check:', conversationSid ? conversationSid.startsWith('CH') : 'null')
 
@@ -373,15 +393,22 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
       }
     }
     
-    // Add a system message when switching modes
-    const systemMessage: ChatMessage = {
-      id: Date.now().toString(),
-      content: `🔄 **Switched to ${newMode === 'basic' ? 'Basic AI' : 'Twilio AI Assistant'}**\n\n${newMode === 'basic' ? 'I\'m a basic AI with limited knowledge. I may need to connect you with a human agent for many questions.' : 'I\'m powered by Twilio AI Assistants with advanced Tools and Knowledge capabilities. I can help with most questions!'}`,
-      sender: 'assistant',
-      timestamp: new Date().toISOString(),
+    // Clear previous chat and add welcome message
+    if (newMode === 'twilio') {
+      setMessages([{
+        id: Date.now().toString(),
+        content: "Hi! I'm your Twilio powered AI assistant. I can help you with order tracking, returns, store hours, and more. How can I assist you today?",
+        sender: 'assistant',
+        timestamp: new Date().toISOString(),
+      }])
+    } else {
+      setMessages([{
+        id: Date.now().toString(),
+        content: "🔄 **Switched to Basic AI** I'm a simple AI assistant. I can help with basic questions, but I'll connect you to a human agent for complex requests.",
+        sender: 'assistant',
+        timestamp: new Date().toISOString(),
+      }])
     }
-    
-    setMessages(prev => [...prev, systemMessage])
   }
 
   // Cleanup on unmount
@@ -400,7 +427,11 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
     return (
       <button
         onClick={() => onClose()}
-        className="fixed bottom-6 right-6 bg-primary-600 text-white p-4 rounded-full shadow-lg hover:bg-primary-700 transition-colors duration-200 z-50"
+        className={`fixed bottom-6 right-6 text-white p-4 rounded-full shadow-lg transition-colors duration-200 z-50 ${
+          aiMode === 'twilio' 
+            ? 'bg-red-600 hover:bg-red-700' 
+            : 'bg-primary-600 hover:bg-primary-700'
+        }`}
       >
         <MessageCircle className="h-6 w-6" />
       </button>
@@ -410,7 +441,9 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
   return (
     <div className="fixed bottom-6 right-6 w-96 h-[600px] bg-white rounded-lg shadow-xl border border-gray-200 flex flex-col z-50">
       {/* Header */}
-      <div className="bg-primary-600 text-white p-4 rounded-t-lg flex items-center justify-between">
+      <div className={`text-white p-4 rounded-t-lg flex items-center justify-between ${
+        aiMode === 'twilio' ? 'bg-red-600' : 'bg-primary-600'
+      }`}>
         <div className="flex items-center space-x-2">
           <Bot className="h-5 w-5" />
           <div>
@@ -426,7 +459,11 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
           {/* AI Mode Toggle */}
           <button
             onClick={toggleAIMode}
-            className="flex items-center space-x-1 bg-primary-700 hover:bg-primary-800 px-2 py-1 rounded text-xs transition-colors duration-200"
+            className={`flex items-center space-x-1 px-2 py-1 rounded text-xs transition-colors duration-200 ${
+              aiMode === 'twilio' 
+                ? 'bg-red-700 hover:bg-red-800' 
+                : 'bg-primary-700 hover:bg-primary-800'
+            }`}
             title={`Switch to ${aiMode === 'basic' ? 'Twilio AI' : 'Basic AI'}`}
           >
             {aiMode === 'basic' ? (
@@ -462,7 +499,7 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
             <div
               className={`max-w-[70%] p-3 rounded-lg shadow-md ${
                 message.sender === 'user'
-                  ? 'bg-primary-500 text-white rounded-br-none'
+                  ? `${aiMode === 'twilio' ? 'bg-red-500' : 'bg-primary-500'} text-white rounded-br-none`
                   : 'bg-gray-100 text-gray-800 rounded-bl-none'
               }`}
             >
@@ -513,7 +550,11 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
         />
         <button
           onClick={handleSendMessage}
-          className="ml-3 bg-primary-600 text-white p-3 rounded-full hover:bg-primary-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          className={`ml-3 text-white p-3 rounded-full transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${
+            aiMode === 'twilio' 
+              ? 'bg-red-600 hover:bg-red-700' 
+              : 'bg-primary-600 hover:bg-primary-700'
+          }`}
           disabled={isTyping || !inputValue.trim()}
         >
           <Send className="h-5 w-5" />
