@@ -55,7 +55,7 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          username: 'user00',
+          identity: 'user00',
           password: 'lets-converse'
         })
       })

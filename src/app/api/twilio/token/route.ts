@@ -2,14 +2,14 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(request: NextRequest) {
   try {
-    const { username, password } = await request.json()
+    const { identity, password } = await request.json()
 
     // Default credentials if not provided
-    const tokenUsername = username || 'user00'
+    const tokenIdentity = identity || 'user00'
     const tokenPassword = password || 'lets-converse'
 
     console.log('🔑 Requesting token from Twilio token service:', {
-      username: tokenUsername,
+      identity: tokenIdentity,
       serviceUrl: 'https://tokens-8856.twil.io/token-service'
     })
 
@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        username: tokenUsername,
+        identity: tokenIdentity,
         password: tokenPassword
       })
     })
@@ -39,18 +39,16 @@ export async function POST(request: NextRequest) {
       }, { status: tokenResponse.status })
     }
 
-    const tokenData = await tokenResponse.json()
+    const tokenJWT = await tokenResponse.text()
     
     console.log('✅ Token received successfully:', {
-      token: tokenData.token ? '***' + tokenData.token.slice(-10) : 'No token',
-      identity: tokenData.identity,
-      expiresIn: tokenData.expiresIn
+      token: tokenJWT ? '***' + tokenJWT.slice(-10) : 'No token',
+      identity: tokenIdentity
     })
 
     return NextResponse.json({
-      token: tokenData.token,
-      identity: tokenData.identity,
-      expiresIn: tokenData.expiresIn
+      token: tokenJWT,
+      identity: tokenIdentity
     })
 
   } catch (error) {
