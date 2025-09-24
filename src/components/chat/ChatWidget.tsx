@@ -28,6 +28,7 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
   const [conversation, setConversation] = useState<Conversation | null>(null)
   const [assistantIsTyping, setAssistantIsTyping] = useState(false)
   const [client, setClient] = useState<Client | null>(null)
+  const [isInitializing, setIsInitializing] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const scrollToBottom = () => {
@@ -40,13 +41,29 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
 
   // Initialize Twilio Conversations SDK when chat opens and mode is Twilio
   useEffect(() => {
-    if (isOpen && aiMode === 'twilio' && !client && !conversation) {
+    if (isOpen && aiMode === 'twilio' && !client && !conversation && !isInitializing) {
       console.log('🚀 Initializing Twilio SDK for the first time...')
       initializeTwilioSDK()
     }
-  }, [isOpen, aiMode, client, conversation])
+  }, [isOpen, aiMode])
+
+  // Cleanup function to disconnect SDK when switching modes or closing chat
+  useEffect(() => {
+    return () => {
+      if (client) {
+        console.log('🧹 Cleaning up Twilio SDK connection...')
+        client.shutdown()
+      }
+    }
+  }, [client])
 
   const initializeTwilioSDK = async () => {
+    if (isInitializing) {
+      console.log('⏳ SDK initialization already in progress, skipping...')
+      return
+    }
+    
+    setIsInitializing(true)
     try {
       console.log('🚀 Initializing Twilio Conversations SDK...')
       
@@ -209,6 +226,7 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
 
       // Client is ready to use
       console.log('✅ Twilio Conversations client initialized')
+      setIsInitializing(false)
 
     } catch (error) {
       console.error('❌ Error initializing Twilio SDK:', error)
@@ -234,6 +252,7 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
       }
       
       setMessages(prev => [...prev, errorMessage])
+      setIsInitializing(false)
     }
   }
 
@@ -345,10 +364,12 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
     // Reset SDK state when switching modes
     if (newMode === 'basic') {
       if (client) {
-        // Client cleanup - just reset state
+        console.log('🔄 Switching to Basic AI - cleaning up Twilio SDK...')
+        client.shutdown()
         setClient(null)
         setConversation(null)
         setConnectionState('disconnected')
+        setIsInitializing(false)
       }
     }
     
