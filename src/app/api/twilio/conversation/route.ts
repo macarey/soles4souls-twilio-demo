@@ -11,11 +11,20 @@ export async function POST(request: NextRequest) {
     const { assistantSid, conversationSid, message, type } = await request.json()
 
     // Check if we have Twilio credentials
-    if (!process.env.TWILIO_ACCOUNT_SID || !process.env.TWILIO_AUTH_TOKEN || !assistantSid) {
+    if (!process.env.TWILIO_ACCOUNT_SID || !process.env.TWILIO_AUTH_TOKEN) {
       return NextResponse.json({
         error: 'Twilio credentials not configured',
         conversationSid: conversationSid || `demo-conversation-${Date.now()}`,
         status: 'demo_mode'
+      }, { status: 400 })
+    }
+
+    // For conversation creation, we need assistantSid
+    if (!message && !assistantSid) {
+      return NextResponse.json({
+        error: 'Assistant SID is required for conversation creation',
+        conversationSid: conversationSid || `demo-conversation-${Date.now()}`,
+        status: 'error'
       }, { status: 400 })
     }
 
