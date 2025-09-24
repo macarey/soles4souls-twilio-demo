@@ -69,8 +69,10 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
 
       const { token, identity } = await tokenResponse.json()
       console.log('✅ Access token received for identity:', identity)
+      console.log('🔑 Token preview:', token ? token.substring(0, 50) + '...' : 'null')
 
       // Initialize Conversations client
+      console.log('🔧 Initializing Conversations client with token...')
       const conversationsClient = new Client(token)
       setClient(conversationsClient)
 
@@ -107,6 +109,7 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
 
       const { conversationSid } = await conversationResponse.json()
       console.log('✅ Conversation created via API:', conversationSid)
+      console.log('🔍 Conversation SID format check:', conversationSid ? conversationSid.startsWith('CH') : 'null')
 
       // Now join the conversation using the SDK
       console.log('🔗 Joining conversation with SDK...')
