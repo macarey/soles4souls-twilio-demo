@@ -159,11 +159,11 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
       } catch (getError) {
         console.error('❌ Detailed error getting conversation:', {
           error: getError,
-          message: getError.message,
-          code: getError.code,
-          status: getError.status,
-          moreInfo: getError.moreInfo,
-          stack: getError.stack
+          message: (getError as any)?.message,
+          code: (getError as any)?.code,
+          status: (getError as any)?.status,
+          moreInfo: (getError as any)?.moreInfo,
+          stack: (getError as any)?.stack
         })
         throw getError
       }
@@ -211,11 +211,14 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
         // Listen for conversation attribute changes to detect assistant typing
         conversation.on('updated', (updatedConversation) => {
           console.log('🔄 Conversation updated - full object:', updatedConversation)
-          console.log('🔄 Conversation attributes raw:', updatedConversation.attributes)
-          console.log('🔄 Conversation attributes type:', typeof updatedConversation.attributes)
+          console.log('🔄 Conversation attributes raw:', updatedConversation.conversation.attributes)
+          console.log('🔄 Conversation attributes type:', typeof updatedConversation.conversation.attributes)
           
           try {
-            const attributes = JSON.parse(updatedConversation.attributes || '{}')
+            const attributesStr = typeof updatedConversation.conversation.attributes === 'string' 
+              ? updatedConversation.conversation.attributes 
+              : JSON.stringify(updatedConversation.conversation.attributes || {})
+            const attributes = JSON.parse(attributesStr)
             console.log('📋 Parsed attributes:', attributes)
             console.log('📋 assistantIsTyping value:', attributes.assistantIsTyping)
             console.log('📋 assistantIsTyping type:', typeof attributes.assistantIsTyping)
@@ -228,7 +231,7 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
             }
           } catch (error) {
             console.log('⚠️ Could not parse conversation attributes:', error)
-            console.log('⚠️ Raw attributes that failed to parse:', updatedConversation.attributes)
+            console.log('⚠️ Raw attributes that failed to parse:', updatedConversation.conversation.attributes)
           }
         })
 
@@ -252,20 +255,20 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
       console.error('❌ Error initializing Twilio SDK:', error)
       console.error('❌ Full error details:', {
         error: error,
-        message: error.message,
-        code: error.code,
-        status: error.status,
-        moreInfo: error.moreInfo,
-        stack: error.stack
+        message: (error as any)?.message,
+        code: (error as any)?.code,
+        status: (error as any)?.status,
+        moreInfo: (error as any)?.moreInfo,
+        stack: (error as any)?.stack
       })
       
       const errorMessage: ChatMessage = {
         id: Date.now().toString(),
         content: `❌ **Twilio SDK Error**: ${error instanceof Error ? error.message : 'Failed to initialize Twilio Conversations SDK'}\n\n**Full Error Details:**\n\`\`\`\n${JSON.stringify({
-          message: error.message,
-          code: error.code,
-          status: error.status,
-          moreInfo: error.moreInfo
+          message: (error as any)?.message,
+          code: (error as any)?.code,
+          status: (error as any)?.status,
+          moreInfo: (error as any)?.moreInfo
         }, null, 2)}\n\`\`\``,
         sender: 'assistant',
         timestamp: new Date().toISOString(),

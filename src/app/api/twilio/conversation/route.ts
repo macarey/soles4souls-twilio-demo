@@ -60,8 +60,7 @@ export async function POST(request: NextRequest) {
 
           console.log('✅ Participant added successfully:', {
             sid: participant.sid,
-            identity: participant.identity,
-            type: participant.type
+            identity: participant.identity
           })
         } catch (participantError) {
           console.error('❌ Error adding participant:', participantError)

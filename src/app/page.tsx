@@ -129,7 +129,10 @@ export default function HomePage() {
                     className="w-full h-48 object-cover"
                     onError={(e) => {
                       e.currentTarget.style.display = 'none'
-                      e.currentTarget.nextElementSibling.style.display = 'flex'
+                      const nextElement = e.currentTarget.nextElementSibling as HTMLElement
+                      if (nextElement) {
+                        nextElement.style.display = 'flex'
+                      }
                     }}
                   />
                   <div className="w-full h-48 bg-gray-200 flex items-center justify-center" style={{display: 'none'}}>
