@@ -48,6 +48,26 @@ export async function POST(request: NextRequest) {
           status: conversation.state
         })
 
+        // Add the user as a participant to the conversation
+        console.log('👤 Adding user as participant to conversation...')
+        try {
+          const participant = await client.conversations.v1
+            .conversations(conversation.sid)
+            .participants
+            .create({
+              identity: 'user00' // The identity from the token
+            })
+
+          console.log('✅ Participant added successfully:', {
+            sid: participant.sid,
+            identity: participant.identity,
+            type: participant.type
+          })
+        } catch (participantError) {
+          console.error('❌ Error adding participant:', participantError)
+          // Don't fail the whole request if participant creation fails
+        }
+
         return NextResponse.json({
           conversationSid: conversation.sid,
           status: 'active'

@@ -26,6 +26,7 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
   const [aiMode, setAiMode] = useState<AIMode>('basic')
   const [connectionState, setConnectionState] = useState<string>('disconnected')
   const [conversation, setConversation] = useState<Conversation | null>(null)
+  const [assistantIsTyping, setAssistantIsTyping] = useState(false)
   const [client, setClient] = useState<Client | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
@@ -39,10 +40,11 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
 
   // Initialize Twilio Conversations SDK when chat opens and mode is Twilio
   useEffect(() => {
-    if (isOpen && aiMode === 'twilio' && !client) {
+    if (isOpen && aiMode === 'twilio' && !client && !conversation) {
+      console.log('🚀 Initializing Twilio SDK for the first time...')
       initializeTwilioSDK()
     }
-  }, [isOpen, aiMode, client])
+  }, [isOpen, aiMode, client, conversation])
 
   const initializeTwilioSDK = async () => {
     try {
@@ -72,7 +74,7 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
       const conversationsClient = new Client(token)
       setClient(conversationsClient)
 
-      // Set up event listeners
+      // Set up event listeners (only once)
       conversationsClient.on('connectionStateChanged', (state) => {
         console.log('🔗 Connection state changed:', state)
         setConnectionState(state)
@@ -81,36 +83,125 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
       conversationsClient.on('conversationJoined', (conversation) => {
         console.log('💬 Joined conversation:', conversation.sid)
         setConversation(conversation)
-        
-        // Set up conversation event listeners
-        conversation.on('messageAdded', (message) => {
-          console.log('📨 New message received:', {
-            sid: message.sid,
-            author: message.author,
-            body: message.body
-          })
+      })
 
+      // Create conversation via REST API, then join it with SDK
+      console.log('🔄 Creating conversation via REST API...')
+      
+      // First, create conversation via our REST API
+      console.log('📡 Calling /api/twilio/conversation to create conversation...')
+      const conversationResponse = await fetch('/api/twilio/conversation', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          assistantSid: process.env.NEXT_PUBLIC_TWILIO_AI_ASSISTANT_SID
+        })
+      })
+
+      if (!conversationResponse.ok) {
+        const errorData = await conversationResponse.json()
+        throw new Error(errorData.error || 'Failed to create conversation via API')
+      }
+
+      const { conversationSid } = await conversationResponse.json()
+      console.log('✅ Conversation created via API:', conversationSid)
+
+      // Now join the conversation using the SDK
+      console.log('🔗 Joining conversation with SDK...')
+      console.log('🔍 Attempting to get conversation with SID:', conversationSid)
+      
+      let conversation
+      try {
+        conversation = await conversationsClient.getConversationBySid(conversationSid)
+        console.log('✅ Successfully got conversation object')
+      } catch (getError) {
+        console.error('❌ Detailed error getting conversation:', {
+          error: getError,
+          message: getError.message,
+          code: getError.code,
+          status: getError.status,
+          moreInfo: getError.moreInfo,
+          stack: getError.stack
+        })
+        throw getError
+      }
+      
+      console.log('✅ Joined conversation successfully!')
+      console.log('📋 Conversation details:', {
+        sid: conversation.sid,
+        friendlyName: conversation.friendlyName,
+        status: conversation.status,
+        state: conversation.state
+      })
+      setConversation(conversation)
+      
+      // Set up conversation event listeners (only once per conversation)
+      conversation.on('messageAdded', (message) => {
+        console.log('📨 New message received:', {
+          sid: message.sid,
+          author: message.author,
+          body: message.body
+        })
+
+        // Only add messages from the assistant, not from the current user
+        // User messages are already added in handleSendMessage
+        if (message.author === 'assistant' || message.author === 'system') {
+          console.log('🤖 Received assistant/system message:', message.body, 'Author:', message.author)
+          
           const newMessage: ChatMessage = {
             id: message.sid,
             content: message.body || '',
-            sender: (message.author === 'assistant' ? 'assistant' : 'user') as 'assistant' | 'user',
+            sender: 'assistant',
             timestamp: message.dateCreated?.toISOString() || new Date().toISOString(),
           }
 
           setMessages(prev => [...prev, newMessage])
+          // Turn off typing indicator when assistant responds (fallback since attributes aren't working)
+          console.log('🛑 Turning off typing indicator due to assistant response')
+          setAssistantIsTyping(false)
+        } else {
+          // This is a user message from the SDK - we already added it in handleSendMessage
+          // So we ignore it to prevent duplicates
+          console.log('📝 Ignoring user message from SDK (already added):', message.body)
+        }
+      })
+
+        // Listen for conversation attribute changes to detect assistant typing
+        conversation.on('updated', (updatedConversation) => {
+          console.log('🔄 Conversation updated - full object:', updatedConversation)
+          console.log('🔄 Conversation attributes raw:', updatedConversation.attributes)
+          console.log('🔄 Conversation attributes type:', typeof updatedConversation.attributes)
+          
+          try {
+            const attributes = JSON.parse(updatedConversation.attributes || '{}')
+            console.log('📋 Parsed attributes:', attributes)
+            console.log('📋 assistantIsTyping value:', attributes.assistantIsTyping)
+            console.log('📋 assistantIsTyping type:', typeof attributes.assistantIsTyping)
+            
+            if (attributes.assistantIsTyping !== undefined) {
+              console.log('⌨️ Assistant typing status changed:', attributes.assistantIsTyping)
+              setAssistantIsTyping(attributes.assistantIsTyping)
+            } else {
+              console.log('❌ assistantIsTyping is undefined in attributes')
+            }
+          } catch (error) {
+            console.log('⚠️ Could not parse conversation attributes:', error)
+            console.log('⚠️ Raw attributes that failed to parse:', updatedConversation.attributes)
+          }
         })
 
-        // Load existing messages
-        conversation.getMessages().then((paginator) => {
-          console.log('📋 Loading existing messages:', paginator.items.length)
-          const formattedMessages = paginator.items.map(msg => ({
-            id: msg.sid,
-            content: msg.body || '',
-            sender: (msg.author === 'assistant' ? 'assistant' : 'user') as 'assistant' | 'user',
-            timestamp: msg.dateCreated?.toISOString() || new Date().toISOString(),
-          }))
-          setMessages(prev => [...prev, ...formattedMessages])
-        })
+      // Load existing messages (only once)
+      conversation.getMessages().then((paginator) => {
+        console.log('📋 Loading existing messages:', paginator.items.length)
+        const formattedMessages = paginator.items.map(msg => ({
+          id: msg.sid,
+          content: msg.body || '',
+          sender: (msg.author === 'assistant' ? 'assistant' : 'user') as 'assistant' | 'user',
+          timestamp: msg.dateCreated?.toISOString() || new Date().toISOString(),
+        }))
+        setMessages(prev => [...prev, ...formattedMessages])
       })
 
       // Client is ready to use
@@ -118,10 +209,23 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
 
     } catch (error) {
       console.error('❌ Error initializing Twilio SDK:', error)
+      console.error('❌ Full error details:', {
+        error: error,
+        message: error.message,
+        code: error.code,
+        status: error.status,
+        moreInfo: error.moreInfo,
+        stack: error.stack
+      })
       
       const errorMessage: ChatMessage = {
         id: Date.now().toString(),
-        content: `❌ **Twilio SDK Error**: ${error instanceof Error ? error.message : 'Failed to initialize Twilio Conversations SDK'}`,
+        content: `❌ **Twilio SDK Error**: ${error instanceof Error ? error.message : 'Failed to initialize Twilio Conversations SDK'}\n\n**Full Error Details:**\n\`\`\`\n${JSON.stringify({
+          message: error.message,
+          code: error.code,
+          status: error.status,
+          moreInfo: error.moreInfo
+        }, null, 2)}\n\`\`\``,
         sender: 'assistant',
         timestamp: new Date().toISOString(),
       }
@@ -132,7 +236,7 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
 
   const getBasicAIResponse = async (userMessage: string): Promise<string> => {
     // Simulate processing time
-    await new Promise(resolve => setTimeout(resolve, 1500 + Math.random() * 1000))
+    await new Promise(resolve => setTimeout(resolve, 1000))
     
     const lowerMessage = userMessage.toLowerCase()
     
@@ -201,6 +305,9 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
           console.log('📤 Sending message via Twilio SDK:', messageToSend)
           await conversation.sendMessage(messageToSend)
           console.log('✅ Message sent via Twilio SDK')
+          
+          // Manually set typing indicator since conversation attributes aren't working
+          setAssistantIsTyping(true)
         } else {
           throw new Error('No active conversation')
         }
@@ -354,6 +461,20 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
         )}
         <div ref={messagesEndRef} />
       </div>
+
+      {/* Assistant Typing Indicator */}
+      {assistantIsTyping && aiMode === 'twilio' && (
+        <div className="px-4 py-2 bg-gray-50 border-t border-gray-200">
+          <div className="flex items-center space-x-2 text-gray-600">
+            <div className="flex space-x-1">
+              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+            </div>
+            <span className="text-sm">AI Assistant is typing...</span>
+          </div>
+        </div>
+      )}
 
       {/* Input */}
       <div className="border-t border-gray-200 p-4 flex items-center">
