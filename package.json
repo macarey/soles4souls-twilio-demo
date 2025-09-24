@@ -10,11 +10,13 @@
   },
   "dependencies": {
     "@twilio/conversations": "^2.6.3",
+    "bufferutil": "^4.0.9",
     "lucide-react": "^0.294.0",
     "next": "14.0.4",
     "react": "^18",
     "react-dom": "^18",
-    "twilio": "^4.19.0"
+    "twilio": "^4.19.0",
+    "utf-8-validate": "^6.0.5"
   },
   "devDependencies": {
     "@types/node": "^20",

@@ -93,7 +93,7 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
           const newMessage: ChatMessage = {
             id: message.sid,
             content: message.body || '',
-            sender: message.author === 'assistant' ? 'assistant' : 'user',
+            sender: (message.author === 'assistant' ? 'assistant' : 'user') as 'assistant' | 'user',
             timestamp: message.dateCreated?.toISOString() || new Date().toISOString(),
           }
 
@@ -101,21 +101,20 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
         })
 
         // Load existing messages
-        conversation.getMessages().then((existingMessages) => {
-          console.log('📋 Loading existing messages:', existingMessages.length)
-          const formattedMessages = existingMessages.map(msg => ({
+        conversation.getMessages().then((paginator) => {
+          console.log('📋 Loading existing messages:', paginator.items.length)
+          const formattedMessages = paginator.items.map(msg => ({
             id: msg.sid,
             content: msg.body || '',
-            sender: msg.author === 'assistant' ? 'assistant' : 'user',
+            sender: (msg.author === 'assistant' ? 'assistant' : 'user') as 'assistant' | 'user',
             timestamp: msg.dateCreated?.toISOString() || new Date().toISOString(),
           }))
           setMessages(prev => [...prev, ...formattedMessages])
         })
       })
 
-      // Connect to the client
-      await conversationsClient.connect()
-      console.log('✅ Twilio Conversations client connected')
+      // Client is ready to use
+      console.log('✅ Twilio Conversations client initialized')
 
     } catch (error) {
       console.error('❌ Error initializing Twilio SDK:', error)
@@ -236,7 +235,7 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
     // Reset SDK state when switching modes
     if (newMode === 'basic') {
       if (client) {
-        client.disconnect()
+        // Client cleanup - just reset state
         setClient(null)
         setConversation(null)
         setConnectionState('disconnected')
@@ -258,7 +257,10 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
   useEffect(() => {
     return () => {
       if (client) {
-        client.disconnect()
+        // Client cleanup - just reset state
+        setClient(null)
+        setConversation(null)
+        setConnectionState('disconnected')
       }
     }
   }, [client])
