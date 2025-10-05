@@ -22,44 +22,71 @@ export const twilioConfig: TwilioConfig = {
 
 // AI Assistant Tools Configuration
 export const assistantTools = {
-  order_lookup: {
-    name: 'order_lookup',
-    description: 'Look up order status and details by order ID',
+  donation_lookup: {
+    name: 'donation_lookup',
+    description: 'Look up donation status and details by donation ID',
     parameters: {
       type: 'object',
       properties: {
-        order_id: {
+        donation_id: {
           type: 'string',
-          description: 'The order ID to look up'
+          description: 'The donation ID to look up'
         }
       },
-      required: ['order_id']
+      required: ['donation_id']
     }
   },
-  return_request: {
-    name: 'return_request',
-    description: 'Process return requests for orders',
+  volunteer_scheduler: {
+    name: 'volunteer_scheduler',
+    description: 'Schedule volunteer opportunities and shifts',
     parameters: {
       type: 'object',
       properties: {
-        order_id: {
+        opportunity_id: {
           type: 'string',
-          description: 'The order ID for the return'
+          description: 'The volunteer opportunity ID to schedule'
         },
-        reason: {
+        volunteer_name: {
           type: 'string',
-          description: 'Reason for the return'
+          description: 'Name of the volunteer'
+        },
+        contact_info: {
+          type: 'string',
+          description: 'Contact information for the volunteer'
         }
       },
-      required: ['order_id', 'reason']
+      required: ['opportunity_id', 'volunteer_name']
     }
   },
-  store_hours: {
-    name: 'store_hours',
-    description: 'Get current store hours and location information',
+  impact_report: {
+    name: 'impact_report',
+    description: 'Retrieve recent impact stories and success metrics',
     parameters: {
       type: 'object',
-      properties: {},
+      properties: {
+        category: {
+          type: 'string',
+          description: 'Filter by program category: 4Relief, 4Opportunity, or 4EveryKid'
+        },
+        location: {
+          type: 'string',
+          description: 'Filter by location'
+        }
+      },
+      required: []
+    }
+  },
+  dropoff_locations: {
+    name: 'dropoff_locations',
+    description: 'Get donation drop-off locations and hours',
+    parameters: {
+      type: 'object',
+      properties: {
+        city: {
+          type: 'string',
+          description: 'City to search for drop-off locations'
+        }
+      },
       required: []
     }
   }
@@ -69,38 +96,50 @@ export const assistantTools = {
 export const knowledgeBase = {
   faq: [
     {
-      question: "What are your store hours?",
-      answer: "Our store hours are Monday-Thursday: 9AM-8PM, Friday: 9AM-9PM, Saturday: 10AM-8PM, Sunday: 11AM-6PM. We're located at 789 Fashion Blvd, San Francisco, CA 94102."
+      question: "Where can I drop off donated shoes?",
+      answer: "We have multiple drop-off locations across Tennessee and partner locations nationwide. Our main facility is at 319 Martingale Dr, Old Hickory, TN 37138, open Mon-Fri 8AM-5PM, Sat 9AM-3PM. You can also search for locations near you using our drop-off finder tool."
     },
     {
-      question: "How do I track my order?",
-      answer: "You can track your order by providing your order ID. I can look up the current status and provide tracking information for you."
+      question: "How do I become a volunteer?",
+      answer: "We'd love to have you volunteer with us! You can help with warehouse sorting, organizing shoe drives, or assisting at distribution events. Use our volunteer scheduler tool to find opportunities that match your interests and schedule. All skill levels are welcome!"
     },
     {
-      question: "What is your return policy?",
-      answer: "We offer a 30-day return policy for unworn items in original packaging. Returns are free and can be processed through our online system or in-store."
+      question: "Can I host a shoe drive in my city?",
+      answer: "Absolutely! Shoe drives are one of the most impactful ways to help. We provide all the materials you need including collection boxes, flyers, and guidance. Contact us at info@soles4souls.org to get started with your community shoe drive."
     },
     {
-      question: "Do you offer free shipping?",
-      answer: "Yes! We offer free shipping on orders over $100. Standard shipping is $9.99 for orders under $100."
+      question: "Do you accept clothing donations?",
+      answer: "Yes! We accept shoes, clothing, and accessories in good condition. Items should be clean and wearable. We distribute these items through our 4Relief program to people in need and use them in our 4Opportunity micro-enterprise program."
     },
     {
-      question: "How do I contact customer service?",
-      answer: "You can reach our customer service team at (555) 123-4567 or email us at support@levelpathshoes.com. Our AI assistant can also help with many common questions!"
+      question: "How are donations used to support small businesses?",
+      answer: "Through our 4Opportunity program, we provide shoes and clothing to entrepreneurs in developing countries who use them to start small businesses. This creates sustainable income and helps break the cycle of poverty. Each donation can help multiple families!"
+    },
+    {
+      question: "What is the 4EveryKid program?",
+      answer: "Our 4EveryKid program provides new shoes to children experiencing homelessness in the United States. We partner with schools and shelters to ensure every child has proper footwear for school and daily activities."
+    },
+    {
+      question: "How can I track my donation?",
+      answer: "When you make a donation, you'll receive a donation ID. You can use this ID with our donation lookup tool to see the status of your donation and learn about its impact. We'll also send you updates about how your donation is helping others."
+    },
+    {
+      question: "Do you accept monetary donations?",
+      answer: "Yes! Monetary donations help us cover shipping costs, purchase new shoes for children, and support our operations. You can donate online through our website or by calling (615) 391-5723. Every dollar makes a difference!"
     }
   ],
   policies: [
     {
-      topic: "Shipping",
-      content: "We ship to all 50 states. Standard shipping takes 3-5 business days, expedited shipping takes 1-2 business days. International shipping is available to select countries."
+      topic: "Donation Guidelines",
+      content: "We accept shoes, clothing, and accessories in good, wearable condition. Items should be clean and free of major damage. We accept all sizes and styles - from children's shoes to work boots."
     },
     {
-      topic: "Returns",
-      content: "30-day return policy. Items must be unworn and in original packaging. Free return shipping. Refunds processed within 5-7 business days."
+      topic: "Volunteer Opportunities",
+      content: "Volunteer opportunities include warehouse sorting, shoe drive coordination, distribution event assistance, and administrative support. Flexible scheduling available with opportunities for individuals and groups."
     },
     {
-      topic: "Size Guide",
-      content: "Our shoes run true to size. If you're between sizes, we recommend sizing up. Check our detailed size guide on each product page for specific measurements."
+      topic: "Impact Measurement",
+      content: "We track every donation and provide regular impact reports. Our programs have distributed over 73 million pairs of shoes and pieces of clothing, helping millions of people worldwide."
     }
   ]
 }

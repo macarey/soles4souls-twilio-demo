@@ -38,13 +38,7 @@ export default function HomePage() {
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <div className="flex items-center space-x-6">
-              <h1 className="text-2xl font-bold text-primary-600">Levelpath Shoes</h1>
-              <Link 
-                href="/admin" 
-                className="text-sm text-gray-600 hover:text-primary-600 transition-colors duration-200"
-              >
-                Admin
-              </Link>
+              <h1 className="text-2xl font-bold text-primary-600">Soles4Souls</h1>
             </div>
 
             {/* Search Bar */}
@@ -53,7 +47,7 @@ export default function HomePage() {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                 <input
                   type="text"
-                  placeholder="Search shoes..."
+                  placeholder="Search donation items..."
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -108,11 +102,16 @@ export default function HomePage() {
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-primary-600 to-primary-800 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl font-bold mb-4">Premium Footwear for Every Step</h2>
-          <p className="text-xl mb-8">Discover our collection of high-quality shoes designed for comfort, style, and performance.</p>
-          <button className="btn-primary bg-white text-primary-600 hover:bg-gray-100">
-            Shop Now
-          </button>
+          <h2 className="text-4xl font-bold mb-4">Turning Shoes Into Opportunities</h2>
+          <p className="text-xl mb-8">Join Soles4Souls to fight poverty and create jobs around the world through shoe and clothing donations.</p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <button className="btn-primary bg-white text-primary-600 hover:bg-gray-100">
+              Donate Shoes
+            </button>
+            <button className="btn-primary bg-transparent border-2 border-white text-white hover:bg-white hover:text-primary-600">
+              Become a Volunteer
+            </button>
+          </div>
         </div>
       </section>
 
@@ -144,7 +143,7 @@ export default function HomePage() {
                 <p className="text-gray-600 text-sm mb-4">{product.description}</p>
                 
                 <div className="flex justify-between items-center mb-4">
-                  <span className="text-2xl font-bold text-primary-600">${product.price}</span>
+                  <span className="text-lg font-bold text-green-600">FREE DONATION</span>
                   <span className="text-sm text-gray-500 capitalize">{product.category}</span>
                 </div>
                 
@@ -152,7 +151,7 @@ export default function HomePage() {
                   onClick={() => addToCart(product)}
                   className="w-full btn-primary"
                 >
-                  Add to Cart
+                  Donate This Item
                 </button>
               </div>
             ))}
@@ -160,7 +159,7 @@ export default function HomePage() {
           
           {filteredProducts.length === 0 && (
             <div className="text-center py-12">
-              <p className="text-gray-500 text-lg">No products found matching your criteria.</p>
+              <p className="text-gray-500 text-lg">No donation items found matching your criteria.</p>
             </div>
           )}
         </div>
@@ -171,17 +170,17 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
-              <h3 className="text-lg font-semibold mb-4">Levelpath Shoes</h3>
-              <p className="text-gray-300">Premium footwear for every occasion.</p>
+              <h3 className="text-lg font-semibold mb-4">Soles4Souls</h3>
+              <p className="text-gray-300">Fighting poverty by turning shoes and clothing into opportunities.</p>
             </div>
             
             <div>
-              <h4 className="font-semibold mb-4">Customer Service</h4>
+              <h4 className="font-semibold mb-4">Get Involved</h4>
               <ul className="space-y-2 text-gray-300">
-                <li>Order Status</li>
-                <li>Returns & Exchanges</li>
-                <li>Size Guide</li>
-                <li>Contact Us</li>
+                <li>Donation Drop-offs</li>
+                <li>Volunteer Opportunities</li>
+                <li>Host a Shoe Drive</li>
+                <li>Partner With Us</li>
               </ul>
             </div>
             
@@ -198,10 +197,10 @@ export default function HomePage() {
             <div>
               <h4 className="font-semibold mb-4">Contact</h4>
               <ul className="space-y-2 text-gray-300">
-                <li>(555) 123-4567</li>
-                <li>support@levelpathshoes.com</li>
-                <li>789 Fashion Blvd</li>
-                <li>San Francisco, CA 94102</li>
+                <li>(615) 391-5723</li>
+                <li>info@soles4souls.org</li>
+                <li>319 Martingale Dr</li>
+                <li>Old Hickory, TN 37138</li>
               </ul>
             </div>
           </div>

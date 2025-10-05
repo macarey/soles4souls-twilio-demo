@@ -21,9 +21,37 @@ export interface Order {
   id: string
   items: CartItem[]
   total: number
-  status: 'pending' | 'shipped' | 'delivered' | 'cancelled'
+  status: 'pending' | 'processing' | 'distributed' | 'received' | 'cancelled'
   orderDate: string
   shippingAddress: Address
+}
+
+export interface VolunteerOpportunity {
+  id: string
+  title: string
+  description: string
+  location: string
+  timeCommitment: string
+  skills: string[]
+  status: 'available' | 'filled' | 'completed'
+}
+
+export interface ImpactStory {
+  id: string
+  title: string
+  description: string
+  location: string
+  date: string
+  category: '4Relief' | '4Opportunity' | '4EveryKid'
+}
+
+export interface DropOffLocation {
+  id: string
+  name: string
+  address: string
+  hours: string
+  phone: string
+  acceptsItems: string[]
 }
 
 export interface Address {

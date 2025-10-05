@@ -5,8 +5,8 @@ import ChatProvider from '@/components/chat/ChatProvider'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata = {
-  title: 'Levelpath Shoes - Premium Footwear',
-  description: 'Discover premium shoes for every occasion at Levelpath Shoes',
+  title: 'Soles4Souls - Fighting Poverty Through Shoes',
+  description: 'Join Soles4Souls to turn unwanted shoes into opportunities, providing relief and creating jobs worldwide',
 }
 
 export default function RootLayout({
