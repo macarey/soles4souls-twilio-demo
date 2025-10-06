@@ -1,7 +1,7 @@
 # Twilio AI Assistant Tools Setup Guide
 
 ## Overview
-This guide explains how to configure the Tools in Twilio AI Assistant Console for the Levelpath Shoes demo.
+This guide explains how to configure the Tools in Twilio AI Assistant Console for the **Soles4Souls** demo.
 
 ## Tool Architecture
 
@@ -12,73 +12,98 @@ This guide explains how to configure the Tools in Twilio AI Assistant Console fo
 4. **AI Response** - AI uses the data to respond to customer
 
 ### Current Tool Endpoints:
-- **Order Lookup**: `/api/tools/order-lookup`
-- **Return Request**: `/api/tools/return-request`  
-- **Store Hours**: `/api/tools/store-hours`
+- **Donation Lookup**: `/api/tools/donation-lookup`
+- **Volunteer Scheduler**: `/api/tools/volunteer-scheduler`  
+- **Impact Report**: `/api/tools/impact-report`
+- **Drop-off Locations**: `/api/tools/dropoff-locations`
 - **Gift Card**: `/api/tools/gift-card`
 
 ## Tool Configuration in Twilio Console
 
-### 1. Order Lookup Tool
+### 1. Donation Lookup Tool
 
-**Tool Name**: `order_lookup`
+**Tool Name**: `donation_lookup`
 
-**Description**: Look up order status and details by order ID
-
-**Input Schema** (TypeScript format):
-```typescript
-export type Data = { 
-  order_id: string 
-}
-```
-
-**Webhook URL**: `https://levelpath-shoes-demo.vercel.app/api/tools/order-lookup`
-
-**Example Usage**:
-- Customer: "Where is my order ORD-001?"
-- AI calls tool with: `{"order_id": "ORD-001"}`
-- Returns order status, tracking info, items, etc.
-
-### 2. Return Request Tool
-
-**Tool Name**: `return_request`
-
-**Description**: Process return requests for orders
+**Description**: Look up donation status and details by donation ID
 
 **Input Schema** (TypeScript format):
 ```typescript
 export type Data = { 
-  order_id: string,
-  reason: string 
+  donation_id: string 
 }
 ```
 
-**Webhook URL**: `https://levelpath-shoes-demo.vercel.app/api/tools/return-request`
+**Webhook URL**: `https://soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app/api/tools/donation-lookup`
 
 **Example Usage**:
-- Customer: "I want to return my shoes because they're too small"
-- AI calls tool with: `{"order_id": "ORD-001", "reason": "too small"}`
-- Returns return label, instructions, refund info
+- Customer: "Where is my donation DON-001?"
+- AI calls tool with: `{"donation_id": "DON-001"}`
+- Returns donation status, impact metrics, distribution details
 
-### 3. Store Hours Tool
+### 2. Volunteer Scheduler Tool
 
-**Tool Name**: `store_hours`
+**Tool Name**: `volunteer_scheduler`
 
-**Description**: Get current store hours and location information
+**Description**: Schedule volunteer opportunities and shifts
 
 **Input Schema** (TypeScript format):
 ```typescript
-export type Data = {}
+export type Data = { 
+  opportunity_id: string,
+  volunteer_name: string,
+  contact_info?: string 
+}
 ```
 
-**Webhook URL**: `https://levelpath-shoes-demo.vercel.app/api/tools/store-hours`
+**Webhook URL**: `https://soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app/api/tools/volunteer-scheduler`
 
 **Example Usage**:
-- Customer: "What are your store hours?"
+- Customer: "I want to volunteer for opportunity VOL-001"
+- AI calls tool with: `{"opportunity_id": "VOL-001", "volunteer_name": "John Smith"}`
+- Returns confirmation details, next steps, contact info
+
+### 3. Impact Report Tool
+
+**Tool Name**: `impact_report`
+
+**Description**: Retrieve recent impact stories and success metrics
+
+**Input Schema** (TypeScript format):
+```typescript
+export type Data = {
+  category?: string,
+  location?: string
+}
+```
+
+**Webhook URL**: `https://soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app/api/tools/impact-report`
+
+**Example Usage**:
+- Customer: "Show me recent impact stories"
 - AI calls tool with: `{}`
-- Returns store hours, location, phone, current status
+- Returns impact stories, program breakdown, global stats
 
-### 4. Gift Card Tool
+### 4. Drop-off Locations Tool
+
+**Tool Name**: `dropoff_locations`
+
+**Description**: Get donation drop-off locations and hours
+
+**Input Schema** (TypeScript format):
+```typescript
+export type Data = {
+  city?: string
+}
+```
+
+**Webhook URL**: `https://soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app/api/tools/dropoff-locations`
+
+**Example Usage**:
+- Customer: "Where can I drop off donations in Nashville?"
+- AI calls tool with: `{"city": "Nashville"}`
+- Returns locations, hours, donation guidelines
+
+### 5. Gift Card Tool
 
 **Tool Name**: `gift_card`
 
@@ -95,7 +120,7 @@ export type Data = {
 }
 ```
 
-**Webhook URL**: `https://levelpath-shoes-demo.vercel.app/api/tools/gift-card`
+**Webhook URL**: `https://soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app/api/tools/gift-card`
 
 **Example Usage**:
 - Customer: "What's the balance on my gift card GC-1234-5678-9012?"
@@ -114,30 +139,46 @@ export type Data = {
 
 ### Current Mock Data Location:
 - **File**: `/src/lib/data.ts`
-- **Orders**: `mockOrders` array
-- **Store Info**: `storeInfo` object
+- **Donations**: `mockOrders` array (used for donation lookup)
+- **Volunteer Opportunities**: `mockVolunteerOpportunities` array
+- **Impact Stories**: `mockImpactStories` array
+- **Drop-off Locations**: `mockDropOffLocations` array
 
-### Sample Order Data:
+### Sample Donation Data:
 ```typescript
 {
-  id: 'ORD-001',
+  id: 'DON-001',
   items: [
     {
-      product: { name: 'Levelpath Runner Pro', price: 129.99 },
-      quantity: 1,
-      size: 10,
+      product: { name: 'Athletic Running Shoes', category: 'running' },
+      quantity: 3,
+      size: '10',
       color: 'Black'
     }
   ],
-  total: 129.99,
-  status: 'shipped',
-  orderDate: '2024-12-01',
+  total: 0,
+  status: 'distributed',
+  orderDate: '2024-09-28',
   shippingAddress: {
     street: '123 Main St',
-    city: 'San Francisco',
+    city: 'Anytown',
     state: 'CA',
-    zipCode: '94102'
+    zipCode: '90210',
+    country: 'USA'
   }
+}
+```
+
+### Sample Volunteer Opportunity Data:
+```typescript
+{
+  id: 'VOL-001',
+  title: 'Warehouse Sorting Volunteer',
+  description: 'Help sort and organize donated shoes and clothing',
+  location: 'Nashville Distribution Center',
+  timeCommitment: '4 hours',
+  skills: ['Organization', 'Physical activity'],
+  status: 'available'
 }
 ```
 
@@ -146,33 +187,41 @@ export type Data = {
 ### 1. Create Tools in Twilio Console
 
 1. Go to **Twilio Console** > **AI Assistants**
-2. Select your **Levelpath Shoes Support** assistant
+2. Select your **Soles4Souls Support** assistant
 3. Go to **Tools** tab
 4. Click **Add Tool** for each tool:
 
-#### Order Lookup Tool:
-- **Name**: `order_lookup`
-- **Description**: `Look up order status and details by order ID`
+#### Donation Lookup Tool:
+- **Name**: `donation_lookup`
+- **Description**: `Look up donation status and details by donation ID`
 - **Type**: `WEBHOOK`
 - **Method**: `POST`
-- **Input Schema**: `export type Data = { order_id: string }`
-- **Webhook URL**: `https://levelpath-shoes-demo.vercel.app/api/tools/order-lookup`
+- **Input Schema**: `export type Data = { donation_id: string }`
+- **Webhook URL**: `https://soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app/api/tools/donation-lookup`
 
-#### Return Request Tool:
-- **Name**: `return_request`
-- **Description**: `Process return requests for orders`
+#### Volunteer Scheduler Tool:
+- **Name**: `volunteer_scheduler`
+- **Description**: `Schedule volunteer opportunities and shifts`
 - **Type**: `WEBHOOK`
 - **Method**: `POST`
-- **Input Schema**: `export type Data = { order_id: string, reason: string }`
-- **Webhook URL**: `https://levelpath-shoes-demo.vercel.app/api/tools/return-request`
+- **Input Schema**: `export type Data = { opportunity_id: string, volunteer_name: string, contact_info?: string }`
+- **Webhook URL**: `https://soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app/api/tools/volunteer-scheduler`
 
-#### Store Hours Tool:
-- **Name**: `store_hours`
-- **Description**: `Get current store hours and location information`
+#### Impact Report Tool:
+- **Name**: `impact_report`
+- **Description**: `Retrieve recent impact stories and success metrics`
 - **Type**: `WEBHOOK`
 - **Method**: `POST`
-- **Input Schema**: `export type Data = {}`
-- **Webhook URL**: `https://levelpath-shoes-demo.vercel.app/api/tools/store-hours`
+- **Input Schema**: `export type Data = { category?: string, location?: string }`
+- **Webhook URL**: `https://soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app/api/tools/impact-report`
+
+#### Drop-off Locations Tool:
+- **Name**: `dropoff_locations`
+- **Description**: `Get donation drop-off locations and hours`
+- **Type**: `WEBHOOK`
+- **Method**: `POST`
+- **Input Schema**: `export type Data = { city?: string }`
+- **Webhook URL**: `https://soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app/api/tools/dropoff-locations`
 
 #### Gift Card Tool:
 - **Name**: `gift_card`
@@ -180,88 +229,103 @@ export type Data = {
 - **Type**: `WEBHOOK`
 - **Method**: `POST`
 - **Input Schema**: `export type Data = { action: "check_balance" | "purchase" | "redeem", cardNumber?: string, amount?: number, recipientEmail?: string, purchaserEmail?: string }`
-- **Webhook URL**: `https://levelpath-shoes-demo.vercel.app/api/tools/gift-card`
+- **Webhook URL**: `https://soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app/api/tools/gift-card`
 
 ### 2. Configure Webhook URLs
 
 Update your `.env.local`:
 ```bash
-TWILIO_WEBHOOK_URL=https://levelpath-shoes-demo.vercel.app/api/webhooks/twilio
-NEXT_PUBLIC_APP_URL=https://levelpath-shoes-demo.vercel.app
+TWILIO_WEBHOOK_URL=https://soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app/api/webhooks/twilio
+NEXT_PUBLIC_APP_URL=https://soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app
 ```
 
 ### 3. Test Tool Integration
 
-#### Test Order Lookup:
+#### Test Donation Lookup:
 ```bash
-curl -X POST https://levelpath-shoes-demo.vercel.app/api/tools/order-lookup \
+curl -X POST https://soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app/api/tools/donation-lookup \
   -H "Content-Type: application/json" \
-  -d '{"order_id": "ORD-001"}'
+  -d '{"donation_id": "DON-001"}'
 ```
 
-#### Test Return Request:
+#### Test Volunteer Scheduler:
 ```bash
-curl -X POST https://levelpath-shoes-demo.vercel.app/api/tools/return-request \
+curl -X POST https://soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app/api/tools/volunteer-scheduler \
   -H "Content-Type: application/json" \
-  -d '{"order_id": "ORD-001", "reason": "too small"}'
+  -d '{"opportunity_id": "VOL-001", "volunteer_name": "John Smith"}'
 ```
 
-#### Test Store Hours:
+#### Test Impact Report:
 ```bash
-curl -X POST https://levelpath-shoes-demo.vercel.app/api/tools/store-hours \
+curl -X POST https://soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app/api/tools/impact-report \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
 
+#### Test Drop-off Locations:
+```bash
+curl -X POST https://soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app/api/tools/dropoff-locations \
+  -H "Content-Type: application/json" \
+  -d '{"city": "Nashville"}'
+```
+
 #### Test Gift Card Balance Check:
 ```bash
-curl -X POST https://levelpath-shoes-demo.vercel.app/api/tools/gift-card \
+curl -X POST https://soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app/api/tools/gift-card \
   -H "Content-Type: application/json" \
   -d '{"action": "check_balance", "cardNumber": "GC-1234-5678-9012"}'
 ```
 
 #### Test Gift Card Purchase:
 ```bash
-curl -X POST https://levelpath-shoes-demo.vercel.app/api/tools/gift-card \
+curl -X POST https://soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app/api/tools/gift-card \
   -H "Content-Type: application/json" \
   -d '{"action": "purchase", "amount": 50, "recipientEmail": "friend@email.com"}'
 ```
 
 #### Test Gift Card Redemption:
 ```bash
-curl -X POST https://levelpath-shoes-demo.vercel.app/api/tools/gift-card \
+curl -X POST https://soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app/api/tools/gift-card \
   -H "Content-Type: application/json" \
   -d '{"action": "redeem", "cardNumber": "GC-1234-5678-9012", "amount": 25}'
 ```
 
 ## Demo Scenarios
 
-### Scenario 1: Order Tracking
-**Customer**: "Where is my order ORD-001?"
+### Scenario 1: Donation Tracking
+**Customer**: "Where is my donation DON-001?"
 **AI Process**:
-1. Recognizes order lookup intent
-2. Calls `order_lookup` tool with `{"order_id": "ORD-001"}`
-3. Receives order data from your API
-4. Responds with order status, tracking number, delivery date
+1. Recognizes donation lookup intent
+2. Calls `donation_lookup` tool with `{"donation_id": "DON-001"}`
+3. Receives donation data from your API
+4. Responds with donation status, impact metrics, distribution details
 
-### Scenario 2: Return Processing
-**Customer**: "I want to return my shoes because they don't fit"
+### Scenario 2: Volunteer Scheduling
+**Customer**: "I want to volunteer for opportunity VOL-001"
 **AI Process**:
-1. Recognizes return intent
-2. Asks for order ID
-3. Calls `return_request` tool with order ID and reason
-4. Receives return label and instructions
-5. Guides customer through return process
+1. Recognizes volunteer scheduling intent
+2. Asks for volunteer name and contact info
+3. Calls `volunteer_scheduler` tool with opportunity ID and volunteer details
+4. Receives confirmation and next steps
+5. Guides volunteer through scheduling process
 
-### Scenario 3: Store Information
-**Customer**: "What are your store hours?"
+### Scenario 3: Impact Stories
+**Customer**: "Show me recent impact stories"
 **AI Process**:
-1. Recognizes store hours query
-2. Calls `store_hours` tool
-3. Receives current hours and location
-4. Provides comprehensive store information
+1. Recognizes impact report query
+2. Calls `impact_report` tool
+3. Receives recent stories, program breakdown, global stats
+4. Provides comprehensive impact information
 
-### Scenario 4: Gift Card Management
+### Scenario 4: Drop-off Locations
+**Customer**: "Where can I drop off donations in Nashville?"
+**AI Process**:
+1. Recognizes location query
+2. Calls `dropoff_locations` tool with `{"city": "Nashville"}`
+3. Receives locations, hours, donation guidelines
+4. Provides detailed drop-off information
+
+### Scenario 5: Gift Card Management
 **Customer**: "What's the balance on my gift card GC-1234-5678-9012?"
 **AI Process**:
 1. Recognizes gift card balance query
@@ -307,9 +371,9 @@ All tool endpoints include proper error handling:
    - Verify tool name matches exactly
    - Check parameter schema
 
-2. **Order not found**
-   - Verify order ID format (ORD-001, ORD-002)
-   - Check mock data includes the order
+2. **Donation not found**
+   - Verify donation ID format (DON-001, DON-002)
+   - Check mock data includes the donation
 
 3. **Webhook timeout**
    - Ensure API responses are fast
