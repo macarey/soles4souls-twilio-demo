@@ -16,7 +16,7 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: '1',
-      content: "Hi! I'm your AI assistant. I can help you with order tracking, returns, store hours, and more. How can I assist you today?",
+      content: "Hi! I'm your Soles4Souls AI assistant. I can help you with donations, volunteer opportunities, impact tracking, and more. How can I assist you today?",
       sender: 'assistant',
       timestamp: new Date().toISOString(),
     }
@@ -286,34 +286,34 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
     const lowerMessage = userMessage.toLowerCase()
     
     // Basic AI - Limited knowledge, frequent escalations
-    if (lowerMessage.includes('order') && (lowerMessage.includes('status') || lowerMessage.includes('track'))) {
-      const orderId = userMessage.match(/ORD-\d+/)?.[0] || 'ORD-001'
-      return `I found order ${orderId} in our system. It shows as "processing" but I don't have detailed tracking information. Let me connect you with a customer service agent who can provide more specific details about your order status.`
+    if (lowerMessage.includes('donation') && (lowerMessage.includes('status') || lowerMessage.includes('track'))) {
+      const donationId = userMessage.match(/DON-\d+/)?.[0] || 'DON-001'
+      return `I found donation ${donationId} in our system. It shows as "distributed" but I don't have detailed impact information. Let me connect you with a Soles4Souls representative who can provide more specific details about your donation's impact.`
     }
     
-    if (lowerMessage.includes('return') || lowerMessage.includes('refund')) {
-      return `I understand you want to return an item. Our return policy is 30 days, but I need to connect you with a customer service representative to process your return request. They'll be able to help you with the return label and instructions.`
+    if (lowerMessage.includes('volunteer') || lowerMessage.includes('help')) {
+      return `I understand you want to volunteer with Soles4Souls. We have many opportunities available, but I need to connect you with our volunteer coordinator to find the best match for your interests and schedule.`
     }
     
-    if (lowerMessage.includes('hours') || lowerMessage.includes('open') || lowerMessage.includes('close')) {
-      return `Our store hours are Monday-Friday 9AM-8PM, Saturday 10AM-6PM, Sunday 11AM-5PM. However, I'm not sure about holiday hours or special events. Let me connect you with someone who can give you the most current information.`
+    if (lowerMessage.includes('drop') || lowerMessage.includes('location') || lowerMessage.includes('where')) {
+      return `I know we have drop-off locations, but I don't have access to current locations and hours. A Soles4Souls representative can provide you with the nearest drop-off location and specific guidelines.`
     }
     
-    if (lowerMessage.includes('shipping') || lowerMessage.includes('delivery')) {
-      return `I know we offer shipping, but I don't have access to current shipping rates or delivery times. A customer service agent can provide you with accurate shipping information and help you choose the best option for your needs.`
+    if (lowerMessage.includes('impact') || lowerMessage.includes('stories')) {
+      return `I understand you want to learn about our impact. We've distributed over 73 million pairs of shoes worldwide, but I don't have access to detailed impact stories. Let me connect you with someone who can share inspiring stories from our programs.`
     }
     
-    if (lowerMessage.includes('size') || lowerMessage.includes('fit')) {
-      return `I understand you have questions about sizing. Our sizing can vary by product, and I don't have access to detailed size charts. Let me connect you with a customer service representative who can help you find the right size.`
+    if (lowerMessage.includes('programs') || lowerMessage.includes('initiatives')) {
+      return `I know Soles4Souls runs several programs like 4Relief, 4Opportunity, and 4EveryKid, but I don't have detailed information about each program. Let me connect you with a representative who can explain our programs in detail.`
     }
     
     // Escalation triggers for basic AI
     if (lowerMessage.includes('agent') || lowerMessage.includes('human') || lowerMessage.includes('speak to someone')) {
-      return `I understand you'd like to speak with a human agent. Let me connect you with one of our customer service representatives right away.`
+      return `I understand you'd like to speak with a human representative. Let me connect you with one of our Soles4Souls team members right away.`
     }
     
     // Default response for basic AI - always escalates
-    return `I understand you're asking about "${userMessage}". I'm still learning and don't have enough information to help you with this specific question. Let me connect you with a customer service representative who can provide you with the assistance you need.`
+    return `I understand you're asking about "${userMessage}". I'm still learning about Soles4Souls and don't have enough information to help you with this specific question. Let me connect you with a team member who can provide you with the assistance you need.`
   }
 
   const handleSendMessage = async () => {
@@ -400,14 +400,14 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
     if (newMode === 'twilio') {
       setMessages([{
         id: Date.now().toString(),
-        content: "Hi! I'm your Twilio powered AI assistant. I can help you with order tracking, returns, store hours, and more. How can I assist you today?",
+        content: "Hi! I'm your Soles4Souls AI assistant powered by Twilio. I can help you with donations, volunteer opportunities, impact tracking, drop-off locations, and more. How can I assist you today?",
         sender: 'assistant',
         timestamp: new Date().toISOString(),
       }])
     } else {
       setMessages([{
         id: Date.now().toString(),
-        content: "🔄 **Switched to Basic AI** I'm a simple AI assistant. I can help with basic questions, but I'll connect you to a human agent for complex requests.",
+        content: "🔄 **Switched to Basic AI** I'm a simple AI assistant for Soles4Souls. I can help with basic questions about donations and volunteering, but I'll connect you to a human representative for complex requests.",
         sender: 'assistant',
         timestamp: new Date().toISOString(),
       }])

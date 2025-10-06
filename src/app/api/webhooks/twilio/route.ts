@@ -51,29 +51,34 @@ async function processAssistantMessage(message: string): Promise<string> {
   
   const lowerMessage = message.toLowerCase()
   
-  // Order lookup tool
-  if (lowerMessage.includes('order') && (lowerMessage.includes('status') || lowerMessage.includes('track'))) {
-    const orderId = message.match(/ORD-\d+/)?.[0] || 'ORD-001'
-    return `I found your order ${orderId}! It's currently shipped and on its way. You can track it with tracking number TRK-${orderId}. Would you like me to help with anything else?`
+  // Donation lookup tool
+  if (lowerMessage.includes('donation') && (lowerMessage.includes('status') || lowerMessage.includes('track'))) {
+    const donationId = message.match(/DON-\d+/)?.[0] || 'DON-001'
+    return `I found your donation ${donationId}! It has been successfully distributed and is making a positive impact. Your donation helped support our micro-enterprise programs. Would you like me to help with anything else?`
   }
   
-  // Return request tool
-  if (lowerMessage.includes('return') || lowerMessage.includes('refund')) {
-    return `I can help you process a return! To start a return, I'll need your order ID. Once you provide it, I can generate a return label and walk you through the process. Our return policy allows returns within 30 days for unworn items in original packaging.`
+  // Volunteer opportunities
+  if (lowerMessage.includes('volunteer') || lowerMessage.includes('help')) {
+    return `I can help you find volunteer opportunities! We have several ways to get involved:\n• Warehouse sorting and processing\n• Community shoe drives\n• Event coordination\n• Administrative support\n\nWhat type of volunteer work interests you most?`
   }
   
-  // Store hours knowledge
-  if (lowerMessage.includes('hours') || lowerMessage.includes('open') || lowerMessage.includes('close')) {
-    return `Our store hours are:\n• Monday-Thursday: 9AM-8PM\n• Friday: 9AM-9PM\n• Saturday: 10AM-8PM\n• Sunday: 11AM-6PM\n\nWe're located at 789 Fashion Blvd, San Francisco, CA 94102. You can also reach us at (555) 123-4567.`
+  // Drop-off locations knowledge
+  if (lowerMessage.includes('drop') || lowerMessage.includes('location') || lowerMessage.includes('where')) {
+    return `I can help you find drop-off locations! We have locations across the country. The nearest locations to you are:\n• Nashville Distribution Center: 319 Martingale Dr, Old Hickory, TN\n• Los Angeles Warehouse: 1234 Industrial Blvd, LA, CA\n\nWould you like me to find locations in a specific city?`
+  }
+  
+  // Impact stories and programs
+  if (lowerMessage.includes('impact') || lowerMessage.includes('stories') || lowerMessage.includes('programs')) {
+    return `I'd love to share our impact with you! Soles4Souls has distributed over 73 million pairs of shoes and pieces of clothing worldwide. Our programs include:\n• 4Relief: Disaster recovery and emergency aid\n• 4Opportunity: Micro-enterprise job creation\n• 4EveryKid: School shoe programs\n• Circularity: Sustainability initiatives\n\nWould you like to hear specific impact stories from any of these programs?`
   }
   
   // Escalation
   if (lowerMessage.includes('agent') || lowerMessage.includes('human') || lowerMessage.includes('speak to someone')) {
-    return `I understand you'd like to speak with a human agent. Let me connect you with one of our customer service representatives. Please hold while I transfer you...`
+    return `I understand you'd like to speak with a human representative. Let me connect you with one of our Soles4Souls team members. Please hold while I transfer you...`
   }
   
   // Default response
-  return `I understand you're asking about "${message}". While I can help with order tracking, returns, store hours, and general questions, I might need to connect you with a human agent for more specific assistance. How else can I help you today?`
+  return `I understand you're asking about "${message}". While I can help with donations, volunteer opportunities, impact stories, and drop-off locations, I might need to connect you with a team member for more specific assistance. How else can I help you today?`
 }
 
 async function executeTool(toolName: string, parameters: any): Promise<any> {
