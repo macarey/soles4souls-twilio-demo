@@ -285,35 +285,47 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
     
     const lowerMessage = userMessage.toLowerCase()
     
-    // Basic AI - Limited knowledge, frequent escalations
-    if (lowerMessage.includes('donation') && (lowerMessage.includes('status') || lowerMessage.includes('track'))) {
-      const donationId = userMessage.match(/DON-\d+/)?.[0] || 'DON-001'
-      return `I found donation ${donationId} in our system. It shows as "distributed" but I don't have detailed impact information. Let me connect you with a Soles4Souls representative who can provide more specific details about your donation's impact.`
+    // Basic AI - Keyword matching for Nashville donation drop-off
+    if ((lowerMessage.includes('donation') || lowerMessage.includes('donate')) && 
+        (lowerMessage.includes('nashville') || lowerMessage.includes('nash'))) {
+      return `📍 **Nashville Drop-off Location Found!**
+
+**Soles4Souls Nashville Distribution Center**
+📍 Address: 319 Martingale Dr, Old Hickory, TN 37138
+🕒 Hours: Monday-Friday 8:00AM-5:00PM, Saturday 9:00AM-3:00PM, Sunday Closed
+📞 Phone: (615) 391-5723
+
+This is our main Nashville location and accepts all types of donations including shoes, clothing, and accessories. You can also call ahead to schedule a tour!
+
+*[This response was generated using keyword matching - no AI/LLM involved]*`
     }
     
-    if (lowerMessage.includes('volunteer') || lowerMessage.includes('help')) {
-      return `I understand you want to volunteer with Soles4Souls. We have many opportunities available, but I need to connect you with our volunteer coordinator to find the best match for your interests and schedule.`
+    // Fallback for other Nashville queries
+    if (lowerMessage.includes('nashville') && 
+        (lowerMessage.includes('location') || lowerMessage.includes('where') || lowerMessage.includes('hours'))) {
+      return `📍 **Nashville Drop-off Location Found!**
+
+**Soles4Souls Nashville Distribution Center**
+📍 Address: 319 Martingale Dr, Old Hickory, TN 37138
+🕒 Hours: Monday-Friday 8:00AM-5:00PM, Saturday 9:00AM-3:00PM, Sunday Closed
+📞 Phone: (615) 391-5723
+
+This is our main Nashville location and accepts all types of donations including shoes, clothing, and accessories. You can also call ahead to schedule a tour!
+
+*[This response was generated using keyword matching - no AI/LLM involved]*`
     }
     
-    if (lowerMessage.includes('drop') || lowerMessage.includes('location') || lowerMessage.includes('where') || lowerMessage.includes('hours') || lowerMessage.includes('open') || lowerMessage.includes('close')) {
-      return `I know we have drop-off locations, but I don't have access to current locations and hours. A Soles4Souls representative can provide you with the nearest drop-off location and specific guidelines.`
-    }
-    
-    if (lowerMessage.includes('impact') || lowerMessage.includes('stories')) {
-      return `I understand you want to learn about our impact. We've distributed over 73 million pairs of shoes worldwide, but I don't have access to detailed impact stories. Let me connect you with someone who can share inspiring stories from our programs.`
-    }
-    
-    if (lowerMessage.includes('programs') || lowerMessage.includes('initiatives')) {
-      return `I know Soles4Souls runs several programs like 4Relief, 4Opportunity, and 4EveryKid, but I don't have detailed information about each program. Let me connect you with a representative who can explain our programs in detail.`
-    }
-    
-    // Escalation triggers for basic AI
-    if (lowerMessage.includes('agent') || lowerMessage.includes('human') || lowerMessage.includes('speak to someone')) {
-      return `I understand you'd like to speak with a human representative. Let me connect you with one of our Soles4Souls team members right away.`
-    }
-    
-    // Default response for basic AI - always escalates
-    return `I understand you're asking about "${userMessage}". I'm still learning about Soles4Souls and don't have enough information to help you with this specific question. Let me connect you with a team member who can provide you with the assistance you need.`
+    // Default response - show limitation of basic AI
+    return `🤖 **Basic AI Response**
+
+I'm a simple chatbot that only knows about Nashville donation drop-offs. I detected keywords like "${userMessage}" but I don't have specific responses programmed for this query.
+
+**What I can help with:**
+- Nashville donation drop-off locations and hours
+
+**For anything else, I'll need to connect you with a human representative.**
+
+*[This is a rule-based bot using keyword matching - not an AI/LLM]*`
   }
 
   const handleSendMessage = async () => {
@@ -407,7 +419,7 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
     } else {
       setMessages([{
         id: Date.now().toString(),
-        content: "🔄 **Switched to Basic AI** I'm a simple AI assistant for Soles4Souls. I can help with basic questions about donations and volunteering, but I'll connect you to a human representative for complex requests.",
+        content: "🔄 **Switched to Basic AI** I'm a simple rule-based chatbot that only knows about Nashville donation drop-offs. I use keyword matching to provide responses - no AI/LLM involved. Try asking about 'donation in Nashville' or 'Nashville drop-off hours'!",
         sender: 'assistant',
         timestamp: new Date().toISOString(),
       }])
