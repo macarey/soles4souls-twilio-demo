@@ -5,7 +5,7 @@ export interface Product {
   image: string
   category: 'running' | 'casual' | 'formal' | 'athletic'
   description: string
-  sizes: number[]
+  sizes: string[]
   colors: string[]
   inStock: boolean
 }
@@ -13,7 +13,7 @@ export interface Product {
 export interface CartItem {
   product: Product
   quantity: number
-  size: number
+  size: string
   color: string
 }
 

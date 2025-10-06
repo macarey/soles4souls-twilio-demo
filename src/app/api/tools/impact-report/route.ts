@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
     
     // Generate impact metrics
     const totalStories = recentStories.length
-    const categories = [...new Set(recentStories.map(story => story.category))]
+    const categories = Array.from(new Set(recentStories.map(story => story.category)))
     
     return NextResponse.json({
       success: true,
