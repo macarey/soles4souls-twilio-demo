@@ -4,7 +4,7 @@
 
 ### Production Environment (master branch)
 - **Branch**: `master`
-- **Domain**: `soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app` (production)
+- **Domain**: `soles4souls-demo.vercel.app` (production)
 - **Environment**: Production
 - **Purpose**: Live demo for interviews and presentations
 
@@ -22,10 +22,10 @@
 TWILIO_ACCOUNT_SID=your_production_account_sid
 TWILIO_AUTH_TOKEN=your_production_auth_token
 TWILIO_AI_ASSISTANT_SID=your_production_assistant_sid
-TWILIO_WEBHOOK_URL=https://soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app/api/webhooks/twilio
+TWILIO_WEBHOOK_URL=https://soles4souls-demo.vercel.app/api/webhooks/twilio
 
 # Application Configuration
-NEXT_PUBLIC_APP_URL=https://soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app
+NEXT_PUBLIC_APP_URL=https://soles4souls-demo.vercel.app
 NEXT_PUBLIC_TWILIO_AI_ASSISTANT_SID=your_production_assistant_sid
 NODE_ENV=production
 ```
@@ -70,7 +70,7 @@ NODE_ENV=staging
 
 ### Production AI Assistant
 - **Name**: "Soles4Souls Support (Production)"
-- **Webhook URL**: `https://soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app/api/webhooks/twilio`
+- **Webhook URL**: `https://soles4souls-demo.vercel.app/api/webhooks/twilio`
 - **Tools**: Configure with production endpoints
 
 ## Tool Endpoints
@@ -82,10 +82,10 @@ NODE_ENV=staging
 - Drop-off Locations: `https://soles4souls-demo-git-stage-macarey.vercel.app/api/tools/dropoff-locations`
 
 ### Production
-- Donation Lookup: `https://soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app/api/tools/donation-lookup`
-- Volunteer Scheduler: `https://soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app/api/tools/volunteer-scheduler`
-- Impact Report: `https://soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app/api/tools/impact-report`
-- Drop-off Locations: `https://soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app/api/tools/dropoff-locations`
+- Donation Lookup: `https://soles4souls-demo.vercel.app/api/tools/donation-lookup`
+- Volunteer Scheduler: `https://soles4souls-demo.vercel.app/api/tools/volunteer-scheduler`
+- Impact Report: `https://soles4souls-demo.vercel.app/api/tools/impact-report`
+- Drop-off Locations: `https://soles4souls-demo.vercel.app/api/tools/dropoff-locations`
 
 ## Testing Checklist
 

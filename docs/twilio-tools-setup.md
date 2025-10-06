@@ -33,7 +33,7 @@ export type Data = {
 }
 ```
 
-**Webhook URL**: `https://soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app/api/tools/donation-lookup`
+**Webhook URL**: `https://soles4souls-demo.vercel.app/api/tools/donation-lookup`
 
 **Example Usage**:
 - Customer: "Where is my donation DON-001?"
@@ -55,7 +55,7 @@ export type Data = {
 }
 ```
 
-**Webhook URL**: `https://soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app/api/tools/volunteer-scheduler`
+**Webhook URL**: `https://soles4souls-demo.vercel.app/api/tools/volunteer-scheduler`
 
 **Example Usage**:
 - Customer: "I want to volunteer for opportunity VOL-001"
@@ -76,7 +76,7 @@ export type Data = {
 }
 ```
 
-**Webhook URL**: `https://soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app/api/tools/impact-report`
+**Webhook URL**: `https://soles4souls-demo.vercel.app/api/tools/impact-report`
 
 **Example Usage**:
 - Customer: "Show me recent impact stories"
@@ -96,7 +96,7 @@ export type Data = {
 }
 ```
 
-**Webhook URL**: `https://soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app/api/tools/dropoff-locations`
+**Webhook URL**: `https://soles4souls-demo.vercel.app/api/tools/dropoff-locations`
 
 **Example Usage**:
 - Customer: "Where can I drop off donations in Nashville?"
@@ -120,7 +120,7 @@ export type Data = {
 }
 ```
 
-**Webhook URL**: `https://soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app/api/tools/gift-card`
+**Webhook URL**: `https://soles4souls-demo.vercel.app/api/tools/gift-card`
 
 **Example Usage**:
 - Customer: "What's the balance on my gift card GC-1234-5678-9012?"
@@ -197,7 +197,7 @@ export type Data = {
 - **Type**: `WEBHOOK`
 - **Method**: `POST`
 - **Input Schema**: `export type Data = { donation_id: string }`
-- **Webhook URL**: `https://soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app/api/tools/donation-lookup`
+- **Webhook URL**: `https://soles4souls-demo.vercel.app/api/tools/donation-lookup`
 
 #### Volunteer Scheduler Tool:
 - **Name**: `volunteer_scheduler`
@@ -205,7 +205,7 @@ export type Data = {
 - **Type**: `WEBHOOK`
 - **Method**: `POST`
 - **Input Schema**: `export type Data = { opportunity_id: string, volunteer_name: string, contact_info?: string }`
-- **Webhook URL**: `https://soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app/api/tools/volunteer-scheduler`
+- **Webhook URL**: `https://soles4souls-demo.vercel.app/api/tools/volunteer-scheduler`
 
 #### Impact Report Tool:
 - **Name**: `impact_report`
@@ -213,7 +213,7 @@ export type Data = {
 - **Type**: `WEBHOOK`
 - **Method**: `POST`
 - **Input Schema**: `export type Data = { category?: string, location?: string }`
-- **Webhook URL**: `https://soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app/api/tools/impact-report`
+- **Webhook URL**: `https://soles4souls-demo.vercel.app/api/tools/impact-report`
 
 #### Drop-off Locations Tool:
 - **Name**: `dropoff_locations`
@@ -221,7 +221,7 @@ export type Data = {
 - **Type**: `WEBHOOK`
 - **Method**: `POST`
 - **Input Schema**: `export type Data = { city?: string }`
-- **Webhook URL**: `https://soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app/api/tools/dropoff-locations`
+- **Webhook URL**: `https://soles4souls-demo.vercel.app/api/tools/dropoff-locations`
 
 #### Gift Card Tool:
 - **Name**: `gift_card`
@@ -229,63 +229,63 @@ export type Data = {
 - **Type**: `WEBHOOK`
 - **Method**: `POST`
 - **Input Schema**: `export type Data = { action: "check_balance" | "purchase" | "redeem", cardNumber?: string, amount?: number, recipientEmail?: string, purchaserEmail?: string }`
-- **Webhook URL**: `https://soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app/api/tools/gift-card`
+- **Webhook URL**: `https://soles4souls-demo.vercel.app/api/tools/gift-card`
 
 ### 2. Configure Webhook URLs
 
 Update your `.env.local`:
 ```bash
-TWILIO_WEBHOOK_URL=https://soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app/api/webhooks/twilio
-NEXT_PUBLIC_APP_URL=https://soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app
+TWILIO_WEBHOOK_URL=https://soles4souls-demo.vercel.app/api/webhooks/twilio
+NEXT_PUBLIC_APP_URL=https://soles4souls-demo.vercel.app
 ```
 
 ### 3. Test Tool Integration
 
 #### Test Donation Lookup:
 ```bash
-curl -X POST https://soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app/api/tools/donation-lookup \
+curl -X POST https://soles4souls-demo.vercel.app/api/tools/donation-lookup \
   -H "Content-Type: application/json" \
   -d '{"donation_id": "DON-001"}'
 ```
 
 #### Test Volunteer Scheduler:
 ```bash
-curl -X POST https://soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app/api/tools/volunteer-scheduler \
+curl -X POST https://soles4souls-demo.vercel.app/api/tools/volunteer-scheduler \
   -H "Content-Type: application/json" \
   -d '{"opportunity_id": "VOL-001", "volunteer_name": "John Smith"}'
 ```
 
 #### Test Impact Report:
 ```bash
-curl -X POST https://soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app/api/tools/impact-report \
+curl -X POST https://soles4souls-demo.vercel.app/api/tools/impact-report \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
 
 #### Test Drop-off Locations:
 ```bash
-curl -X POST https://soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app/api/tools/dropoff-locations \
+curl -X POST https://soles4souls-demo.vercel.app/api/tools/dropoff-locations \
   -H "Content-Type: application/json" \
   -d '{"city": "Nashville"}'
 ```
 
 #### Test Gift Card Balance Check:
 ```bash
-curl -X POST https://soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app/api/tools/gift-card \
+curl -X POST https://soles4souls-demo.vercel.app/api/tools/gift-card \
   -H "Content-Type: application/json" \
   -d '{"action": "check_balance", "cardNumber": "GC-1234-5678-9012"}'
 ```
 
 #### Test Gift Card Purchase:
 ```bash
-curl -X POST https://soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app/api/tools/gift-card \
+curl -X POST https://soles4souls-demo.vercel.app/api/tools/gift-card \
   -H "Content-Type: application/json" \
   -d '{"action": "purchase", "amount": 50, "recipientEmail": "friend@email.com"}'
 ```
 
 #### Test Gift Card Redemption:
 ```bash
-curl -X POST https://soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app/api/tools/gift-card \
+curl -X POST https://soles4souls-demo.vercel.app/api/tools/gift-card \
   -H "Content-Type: application/json" \
   -d '{"action": "redeem", "cardNumber": "GC-1234-5678-9012", "amount": 25}'
 ```

@@ -77,7 +77,7 @@ async function processAssistantMessage(message: string): Promise<string> {
 }
 
 async function executeTool(toolName: string, parameters: any): Promise<any> {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app'
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://soles4souls-demo.vercel.app'
   
   switch (toolName) {
     case 'order_lookup':
