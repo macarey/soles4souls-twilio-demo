@@ -16,7 +16,6 @@ This guide explains how to configure the Tools in Twilio AI Assistant Console fo
 - **Volunteer Scheduler**: `/api/tools/volunteer-scheduler`  
 - **Impact Report**: `/api/tools/impact-report`
 - **Drop-off Locations**: `/api/tools/dropoff-locations`
-- **Gift Card**: `/api/tools/gift-card`
 
 ## Tool Configuration in Twilio Console
 
@@ -102,38 +101,6 @@ export type Data = {
 - Customer: "Where can I drop off donations in Nashville?"
 - AI calls tool with: `{"city": "Nashville"}`
 - Returns locations, hours, donation guidelines
-
-### 5. Gift Card Tool
-
-**Tool Name**: `gift_card`
-
-**Description**: Check gift card balance, purchase new gift cards, or redeem gift cards
-
-**Input Schema** (TypeScript format):
-```typescript
-export type Data = { 
-  action: "check_balance" | "purchase" | "redeem",
-  cardNumber?: string,
-  amount?: number,
-  recipientEmail?: string,
-  purchaserEmail?: string
-}
-```
-
-**Webhook URL**: `https://soles4souls-demo.vercel.app/api/tools/gift-card`
-
-**Example Usage**:
-- Customer: "What's the balance on my gift card GC-1234-5678-9012?"
-- AI calls tool with: `{"action": "check_balance", "cardNumber": "GC-1234-5678-9012"}`
-- Returns balance, expiry date, status
-
-- Customer: "I want to buy a $50 gift card for my friend"
-- AI calls tool with: `{"action": "purchase", "amount": 50, "recipientEmail": "friend@email.com"}`
-- Returns new gift card details and delivery info
-
-- Customer: "I want to redeem $25 from my gift card"
-- AI calls tool with: `{"action": "redeem", "cardNumber": "GC-1234-5678-9012", "amount": 25}`
-- Returns redemption confirmation and remaining balance
 
 ## Data Sources
 
@@ -223,14 +190,6 @@ export type Data = {
 - **Input Schema**: `export type Data = { city?: string }`
 - **Webhook URL**: `https://soles4souls-demo.vercel.app/api/tools/dropoff-locations`
 
-#### Gift Card Tool:
-- **Name**: `gift_card`
-- **Description**: `Check gift card balance, purchase new gift cards, or redeem gift cards`
-- **Type**: `WEBHOOK`
-- **Method**: `POST`
-- **Input Schema**: `export type Data = { action: "check_balance" | "purchase" | "redeem", cardNumber?: string, amount?: number, recipientEmail?: string, purchaserEmail?: string }`
-- **Webhook URL**: `https://soles4souls-demo.vercel.app/api/tools/gift-card`
-
 ### 2. Configure Webhook URLs
 
 Update your `.env.local`:
@@ -267,27 +226,6 @@ curl -X POST https://soles4souls-demo.vercel.app/api/tools/impact-report \
 curl -X POST https://soles4souls-demo.vercel.app/api/tools/dropoff-locations \
   -H "Content-Type: application/json" \
   -d '{"city": "Nashville"}'
-```
-
-#### Test Gift Card Balance Check:
-```bash
-curl -X POST https://soles4souls-demo.vercel.app/api/tools/gift-card \
-  -H "Content-Type: application/json" \
-  -d '{"action": "check_balance", "cardNumber": "GC-1234-5678-9012"}'
-```
-
-#### Test Gift Card Purchase:
-```bash
-curl -X POST https://soles4souls-demo.vercel.app/api/tools/gift-card \
-  -H "Content-Type: application/json" \
-  -d '{"action": "purchase", "amount": 50, "recipientEmail": "friend@email.com"}'
-```
-
-#### Test Gift Card Redemption:
-```bash
-curl -X POST https://soles4souls-demo.vercel.app/api/tools/gift-card \
-  -H "Content-Type: application/json" \
-  -d '{"action": "redeem", "cardNumber": "GC-1234-5678-9012", "amount": 25}'
 ```
 
 ## Demo Scenarios

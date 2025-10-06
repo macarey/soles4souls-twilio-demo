@@ -80,17 +80,14 @@ async function executeTool(toolName: string, parameters: any): Promise<any> {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://soles4souls-demo.vercel.app'
   
   switch (toolName) {
-    case 'order_lookup':
-      return await callToolEndpoint(`${baseUrl}/api/tools/order-lookup`, { order_id: parameters.order_id })
-    case 'return_request':
-      return await callToolEndpoint(`${baseUrl}/api/tools/return-request`, { 
-        order_id: parameters.order_id, 
-        reason: parameters.reason 
-      })
-    case 'store_hours':
-      return await callToolEndpoint(`${baseUrl}/api/tools/store-hours`, {})
-    case 'gift_card':
-      return await callToolEndpoint(`${baseUrl}/api/tools/gift-card`, parameters)
+    case 'donation_lookup':
+      return await callToolEndpoint(`${baseUrl}/api/tools/donation-lookup`, { donation_id: parameters.donation_id })
+    case 'volunteer_scheduler':
+      return await callToolEndpoint(`${baseUrl}/api/tools/volunteer-scheduler`, parameters)
+    case 'impact_report':
+      return await callToolEndpoint(`${baseUrl}/api/tools/impact-report`, {})
+    case 'dropoff_locations':
+      return await callToolEndpoint(`${baseUrl}/api/tools/dropoff-locations`, parameters)
     default:
       throw new Error(`Unknown tool: ${toolName}`)
   }
