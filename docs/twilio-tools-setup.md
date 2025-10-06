@@ -292,53 +292,67 @@ curl -X POST https://soles4souls-demo.vercel.app/api/tools/gift-card \
 
 ## Demo Scenarios
 
-### Scenario 1: Donation Tracking
-**Customer**: "Where is my donation DON-001?"
-**AI Process**:
-1. Recognizes donation lookup intent
-2. Calls `donation_lookup` tool with `{"donation_id": "DON-001"}`
-3. Receives donation data from your API
-4. Responds with donation status, impact metrics, distribution details
+### 1️⃣ Donor Journey – "I want to donate shoes."
 
-### Scenario 2: Volunteer Scheduling
-**Customer**: "I want to volunteer for opportunity VOL-001"
-**AI Process**:
-1. Recognizes volunteer scheduling intent
-2. Asks for volunteer name and contact info
-3. Calls `volunteer_scheduler` tool with opportunity ID and volunteer details
-4. Receives confirmation and next steps
-5. Guides volunteer through scheduling process
+**Goal**: Show how the AI Assistant simplifies donations and reduces staff workload.
 
-### Scenario 3: Impact Stories
-**Customer**: "Show me recent impact stories"
-**AI Process**:
-1. Recognizes impact report query
-2. Calls `impact_report` tool
-3. Receives recent stories, program breakdown, global stats
-4. Provides comprehensive impact information
+**Flow**:
+1. User opens the chat widget and types, "I want to donate shoes."
+2. Assistant thanks them and asks for their location or ZIP code.
+3. Uses the `dropoff_locations` tool to find the nearest donation site.
+4. Provides address, hours, and optional "Mail-in Donation" info.
+5. Ends with a thank-you message and impact statement like:
+   "Every pair you donate helps create jobs and fight poverty — thank you for making a difference!"
 
-### Scenario 4: Drop-off Locations
-**Customer**: "Where can I drop off donations in Nashville?"
-**AI Process**:
-1. Recognizes location query
-2. Calls `dropoff_locations` tool with `{"city": "Nashville"}`
-3. Receives locations, hours, donation guidelines
-4. Provides detailed drop-off information
+**Value**: Instant donor support, fewer missed donations, improved donor experience.
 
-### Scenario 5: Gift Card Management
-**Customer**: "What's the balance on my gift card GC-1234-5678-9012?"
-**AI Process**:
-1. Recognizes gift card balance query
-2. Calls `gift_card` tool with `{"action": "check_balance", "cardNumber": "GC-1234-5678-9012"}`
-3. Receives balance, expiry date, and status
-4. Provides detailed gift card information
+### 2️⃣ Volunteer Journey – "I want to help this weekend."
 
-**Customer**: "I want to buy a $50 gift card for my friend"
-**AI Process**:
-1. Recognizes gift card purchase intent
-2. Calls `gift_card` tool with `{"action": "purchase", "amount": 50, "recipientEmail": "friend@email.com"}`
-3. Receives new gift card details and delivery info
-4. Guides customer through gift card purchase process
+**Goal**: Demonstrate how AI automates volunteer scheduling and coordination.
+
+**Flow**:
+1. User says, "I'd like to volunteer."
+2. Assistant asks which city or program (e.g., warehouse sorting, shoe drive).
+3. Uses `volunteer_scheduler` tool to show available slots.
+4. Confirms the shift and provides next steps or a contact link.
+5. Ends with a warm, motivational line like:
+   "Amazing! Volunteers like you make everything we do possible."
+
+**Value**: Less manual coordination, better volunteer retention, real-time engagement.
+
+### 3️⃣ Donor Impact Journey – "Where did my donation go?"
+
+**Goal**: Show how Soles4Souls can provide transparency and emotional connection through Twilio AI Assistants.
+
+**Flow**:
+1. Donor says, "I donated last month — what happened to my shoes?"
+2. Assistant looks up a donation ID or name using the `donation_lookup` or `impact_report` tool.
+3. Returns a personalized impact summary like:
+   "Your donation helped support micro-enterprise programs in Haiti, giving new life to gently used shoes."
+4. Offers a follow-up call to action: "Would you like to read more stories from that program?"
+
+**Value**: Increases donor satisfaction and retention through meaningful feedback loops.
+
+### 4️⃣ Awareness Journey – "What programs do you have?"
+
+**Goal**: Highlight the assistant's ability to educate and inspire.
+
+**Flow**:
+1. User asks, "What programs does Soles4Souls run?"
+2. Assistant pulls from the knowledge base and summarizes:
+   - **4Relief**: disaster recovery
+   - **4Opportunity**: job creation  
+   - **4EveryKid**: school shoe donations
+   - **Circularity**: sustainability initiatives
+3. Offers links or next steps for getting involved.
+
+**Value**: Strengthens brand awareness and drives participation in new programs.
+
+### ✅ Journey Value Arc:
+- **Automation** (reduce workload)
+- **Engagement** (increase participation)  
+- **Transparency** (build trust)
+- **Education** (expand awareness)
 
 ## Production Considerations
 
