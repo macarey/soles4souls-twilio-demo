@@ -62,9 +62,9 @@ async function processAssistantMessage(message: string): Promise<string> {
     return `I can help you find volunteer opportunities! We have several ways to get involved:\n• Warehouse sorting and processing\n• Community shoe drives\n• Event coordination\n• Administrative support\n\nWhat type of volunteer work interests you most?`
   }
   
-  // Drop-off locations knowledge
-  if (lowerMessage.includes('drop') || lowerMessage.includes('location') || lowerMessage.includes('where')) {
-    return `I can help you find drop-off locations! We have locations across the country. The nearest locations to you are:\n• Nashville Distribution Center: 319 Martingale Dr, Old Hickory, TN\n• Los Angeles Warehouse: 1234 Industrial Blvd, LA, CA\n\nWould you like me to find locations in a specific city?`
+  // Drop-off locations and hours
+  if (lowerMessage.includes('drop') || lowerMessage.includes('location') || lowerMessage.includes('where') || lowerMessage.includes('hours') || lowerMessage.includes('open') || lowerMessage.includes('close')) {
+    return `I can help you with drop-off locations and hours! Here are our main locations:\n\n**Nashville Distribution Center**\n• Address: 319 Martingale Dr, Old Hickory, TN 37138\n• Hours: Monday-Friday 8AM-5PM, Saturday 9AM-2PM\n• Phone: (615) 391-5723\n\n**Los Angeles Warehouse**\n• Address: 1234 Industrial Blvd, Los Angeles, CA 90058\n• Hours: Monday-Friday 9AM-4PM\n• Phone: (323) 555-0123\n\nWould you like me to find locations in a specific city or get more detailed information?`
   }
   
   // Impact stories and programs

@@ -295,7 +295,7 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
       return `I understand you want to volunteer with Soles4Souls. We have many opportunities available, but I need to connect you with our volunteer coordinator to find the best match for your interests and schedule.`
     }
     
-    if (lowerMessage.includes('drop') || lowerMessage.includes('location') || lowerMessage.includes('where')) {
+    if (lowerMessage.includes('drop') || lowerMessage.includes('location') || lowerMessage.includes('where') || lowerMessage.includes('hours') || lowerMessage.includes('open') || lowerMessage.includes('close')) {
       return `I know we have drop-off locations, but I don't have access to current locations and hours. A Soles4Souls representative can provide you with the nearest drop-off location and specific guidelines.`
     }
     

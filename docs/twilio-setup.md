@@ -133,9 +133,6 @@ NEXT_PUBLIC_APP_URL=https://your-domain.com
 - **Question**: "Where can I drop off donations?"
 - **Answer**: "We have drop-off locations in many cities. I can help you find the nearest location and provide hours of operation."
 
-- **Question**: "What programs does Soles4Souls support?"
-- **Answer**: "Soles4Souls operates three main programs: 4Relief (emergency relief and disaster response), 4Opportunity (micro-enterprise and job creation), and 4EveryKid (children experiencing homelessness)."
-
 ### 4. Configure Webhooks
 
 #### Assistant Webhook URL
