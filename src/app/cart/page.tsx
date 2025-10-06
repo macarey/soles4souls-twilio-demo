@@ -10,7 +10,7 @@ export default function CartPage() {
     {
       product: {
         id: '1',
-        name: 'Levelpath Runner Pro',
+        name: 'Soles4Souls Runner Pro',
         price: 129.99,
         image: '/images/runner-pro.jpg',
         category: 'running',

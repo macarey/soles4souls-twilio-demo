@@ -4,13 +4,13 @@
 
 ### Production Environment (master branch)
 - **Branch**: `master`
-- **Domain**: `levelpath-shoes-demo.vercel.app` (production)
+- **Domain**: `soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app` (production)
 - **Environment**: Production
 - **Purpose**: Live demo for interviews and presentations
 
 ### Staging Environment (stage branch)
 - **Branch**: `stage`
-- **Domain**: `levelpath-shoes-demo-git-stage-macarey.vercel.app` (preview)
+- **Domain**: `soles4souls-demo-git-stage-macarey.vercel.app` (preview)
 - **Environment**: Staging
 - **Purpose**: Testing and development with real Twilio integration
 
@@ -22,10 +22,10 @@
 TWILIO_ACCOUNT_SID=your_production_account_sid
 TWILIO_AUTH_TOKEN=your_production_auth_token
 TWILIO_AI_ASSISTANT_SID=your_production_assistant_sid
-TWILIO_WEBHOOK_URL=https://levelpath-shoes-demo.vercel.app/api/webhooks/twilio
+TWILIO_WEBHOOK_URL=https://soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app/api/webhooks/twilio
 
 # Application Configuration
-NEXT_PUBLIC_APP_URL=https://levelpath-shoes-demo.vercel.app
+NEXT_PUBLIC_APP_URL=https://soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app
 NEXT_PUBLIC_TWILIO_AI_ASSISTANT_SID=your_production_assistant_sid
 NODE_ENV=production
 ```
@@ -36,10 +36,10 @@ NODE_ENV=production
 TWILIO_ACCOUNT_SID=your_staging_account_sid
 TWILIO_AUTH_TOKEN=your_staging_auth_token
 TWILIO_AI_ASSISTANT_SID=your_staging_assistant_sid
-TWILIO_WEBHOOK_URL=https://levelpath-shoes-demo-git-stage-macarey.vercel.app/api/webhooks/twilio
+TWILIO_WEBHOOK_URL=https://soles4souls-demo-git-stage-macarey.vercel.app/api/webhooks/twilio
 
 # Application Configuration
-NEXT_PUBLIC_APP_URL=https://levelpath-shoes-demo-git-stage-macarey.vercel.app
+NEXT_PUBLIC_APP_URL=https://soles4souls-demo-git-stage-macarey.vercel.app
 NEXT_PUBLIC_TWILIO_AI_ASSISTANT_SID=your_staging_assistant_sid
 NODE_ENV=staging
 ```
@@ -64,26 +64,28 @@ NODE_ENV=staging
 ## Twilio Console Setup
 
 ### Staging AI Assistant
-- **Name**: "Levelpath Shoes Support (Staging)"
-- **Webhook URL**: `https://levelpath-shoes-demo-git-stage-macarey.vercel.app/api/webhooks/twilio`
+- **Name**: "Soles4Souls Support (Staging)"
+- **Webhook URL**: `https://soles4souls-demo-git-stage-macarey.vercel.app/api/webhooks/twilio`
 - **Tools**: Configure with staging endpoints
 
 ### Production AI Assistant
-- **Name**: "Levelpath Shoes Support (Production)"
-- **Webhook URL**: `https://levelpath-shoes-demo.vercel.app/api/webhooks/twilio`
+- **Name**: "Soles4Souls Support (Production)"
+- **Webhook URL**: `https://soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app/api/webhooks/twilio`
 - **Tools**: Configure with production endpoints
 
 ## Tool Endpoints
 
 ### Staging
-- Order Lookup: `https://levelpath-shoes-demo-git-stage-macarey.vercel.app/api/tools/order-lookup`
-- Return Request: `https://levelpath-shoes-demo-git-stage-macarey.vercel.app/api/tools/return-request`
-- Store Hours: `https://levelpath-shoes-demo-git-stage-macarey.vercel.app/api/tools/store-hours`
+- Donation Lookup: `https://soles4souls-demo-git-stage-macarey.vercel.app/api/tools/donation-lookup`
+- Volunteer Scheduler: `https://soles4souls-demo-git-stage-macarey.vercel.app/api/tools/volunteer-scheduler`
+- Impact Report: `https://soles4souls-demo-git-stage-macarey.vercel.app/api/tools/impact-report`
+- Drop-off Locations: `https://soles4souls-demo-git-stage-macarey.vercel.app/api/tools/dropoff-locations`
 
 ### Production
-- Order Lookup: `https://levelpath-shoes-demo.vercel.app/api/tools/order-lookup`
-- Return Request: `https://levelpath-shoes-demo.vercel.app/api/tools/return-request`
-- Store Hours: `https://levelpath-shoes-demo.vercel.app/api/tools/store-hours`
+- Donation Lookup: `https://soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app/api/tools/donation-lookup`
+- Volunteer Scheduler: `https://soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app/api/tools/volunteer-scheduler`
+- Impact Report: `https://soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app/api/tools/impact-report`
+- Drop-off Locations: `https://soles4souls-demo-72ggp60me-marks-projects-a7b9c819.vercel.app/api/tools/dropoff-locations`
 
 ## Testing Checklist
 

@@ -1,7 +1,7 @@
 # Twilio AI Assistant Integration Guide
 
 ## Overview
-This guide explains how to set up and configure Twilio AI Assistants for the Levelpath Shoes demo.
+This guide explains how to set up and configure Twilio AI Assistants for the **Soles4Souls** demo.
 
 ## Prerequisites
 1. Twilio Account with AI Assistants enabled
@@ -29,59 +29,90 @@ NEXT_PUBLIC_APP_URL=https://your-domain.com
 ### 1. Create AI Assistant in Twilio Console
 1. Go to Twilio Console > AI Assistants
 2. Click "Create Assistant"
-3. Name: "Levelpath Shoes Support"
-4. Description: "AI Assistant for Levelpath Shoes customer support"
+3. Name: "Soles4Souls Support"
+4. Description: "AI Assistant for Soles4Souls customer support and volunteer coordination"
 
 ### 2. Configure Tools
 
-#### Order Lookup Tool
+#### Donation Lookup Tool
 ```json
 {
-  "name": "order_lookup",
-  "description": "Look up order status and details by order ID",
+  "name": "donation_lookup",
+  "description": "Look up donation status and details by donation ID",
   "parameters": {
     "type": "object",
     "properties": {
-      "order_id": {
+      "donation_id": {
         "type": "string",
-        "description": "The order ID to look up"
+        "description": "The donation ID to look up"
       }
     },
-    "required": ["order_id"]
+    "required": ["donation_id"]
   }
 }
 ```
 
-#### Return Request Tool
+#### Volunteer Scheduler Tool
 ```json
 {
-  "name": "return_request",
-  "description": "Process return requests for orders",
+  "name": "volunteer_scheduler",
+  "description": "Schedule volunteer opportunities and shifts",
   "parameters": {
     "type": "object",
     "properties": {
-      "order_id": {
+      "opportunity_id": {
         "type": "string",
-        "description": "The order ID for the return"
+        "description": "The volunteer opportunity ID to schedule"
       },
-      "reason": {
+      "volunteer_name": {
         "type": "string",
-        "description": "Reason for the return"
+        "description": "Name of the volunteer"
+      },
+      "contact_info": {
+        "type": "string",
+        "description": "Contact information for the volunteer"
       }
     },
-    "required": ["order_id", "reason"]
+    "required": ["opportunity_id", "volunteer_name"]
   }
 }
 ```
 
-#### Store Hours Tool
+#### Impact Report Tool
 ```json
 {
-  "name": "store_hours",
-  "description": "Get current store hours and location information",
+  "name": "impact_report",
+  "description": "Retrieve recent impact stories and success metrics",
   "parameters": {
     "type": "object",
-    "properties": {},
+    "properties": {
+      "category": {
+        "type": "string",
+        "description": "Filter by program category: 4Relief, 4Opportunity, or 4EveryKid"
+      },
+      "location": {
+        "type": "string",
+        "description": "Filter by location"
+      }
+    },
+    "required": []
+  }
+}
+```
+
+#### Drop-off Locations Tool
+```json
+{
+  "name": "dropoff_locations",
+  "description": "Get donation drop-off locations and hours",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "city": {
+        "type": "string",
+        "description": "City to search for drop-off locations"
+      }
+    },
     "required": []
   }
 }
@@ -90,17 +121,20 @@ NEXT_PUBLIC_APP_URL=https://your-domain.com
 ### 3. Configure Knowledge Base
 
 #### FAQ Knowledge
-- **Question**: "What are your store hours?"
-- **Answer**: "Our store hours are Monday-Thursday: 9AM-8PM, Friday: 9AM-9PM, Saturday: 10AM-8PM, Sunday: 11AM-6PM. We're located at 789 Fashion Blvd, San Francisco, CA 94102."
+- **Question**: "How can I donate shoes and clothing?"
+- **Answer**: "You can donate shoes and clothing by visiting one of our drop-off locations, shipping items to our distribution center, or organizing a shoe drive. All donations help fight poverty and create opportunity worldwide."
 
-- **Question**: "How do I track my order?"
-- **Answer**: "You can track your order by providing your order ID. I can look up the current status and provide tracking information for you."
+- **Question**: "How do I track my donation?"
+- **Answer**: "You can track your donation by providing your donation ID. I can look up the current status and show you the impact your donation has made."
 
-- **Question**: "What is your return policy?"
-- **Answer**: "We offer a 30-day return policy for unworn items in original packaging. Returns are free and can be processed through our online system or in-store."
+- **Question**: "What volunteer opportunities are available?"
+- **Answer**: "We have various volunteer opportunities including warehouse sorting, distribution events, and administrative support. I can help you find and schedule volunteer opportunities in your area."
 
-- **Question**: "Do you offer free shipping?"
-- **Answer**: "Yes! We offer free shipping on orders over $100. Standard shipping is $9.99 for orders under $100."
+- **Question**: "Where can I drop off donations?"
+- **Answer**: "We have drop-off locations in many cities. I can help you find the nearest location and provide hours of operation."
+
+- **Question**: "What programs does Soles4Souls support?"
+- **Answer**: "Soles4Souls operates three main programs: 4Relief (emergency relief and disaster response), 4Opportunity (micro-enterprise and job creation), and 4EveryKid (children experiencing homelessness)."
 
 ### 4. Configure Webhooks
 
@@ -142,19 +176,23 @@ Handles Twilio webhook events for AI Assistant interactions.
 
 ## Testing the Integration
 
-### 1. Test Order Lookup
-Send message: "Where is my order ORD-001?"
-Expected: AI should look up the order and provide status information.
+### 1. Test Donation Lookup
+Send message: "Where is my donation DON-001?"
+Expected: AI should look up the donation and provide status and impact information.
 
-### 2. Test Return Processing
-Send message: "I want to return my shoes"
-Expected: AI should ask for order ID and guide through return process.
+### 2. Test Volunteer Scheduling
+Send message: "I want to volunteer for opportunity VOL-001"
+Expected: AI should ask for volunteer details and guide through scheduling process.
 
-### 3. Test Store Hours
-Send message: "What are your store hours?"
-Expected: AI should provide store hours and location information.
+### 3. Test Impact Stories
+Send message: "Show me recent impact stories"
+Expected: AI should provide recent success stories and program metrics.
 
-### 4. Test Escalation
+### 4. Test Drop-off Locations
+Send message: "Where can I drop off donations in Nashville?"
+Expected: AI should provide drop-off locations, hours, and donation guidelines.
+
+### 5. Test Escalation
 Send message: "I want to speak to a human agent"
 Expected: AI should acknowledge and initiate escalation process.
 

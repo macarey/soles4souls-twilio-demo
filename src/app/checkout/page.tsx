@@ -264,7 +264,7 @@ export default function CheckoutPage() {
                   <div className="bg-gray-50 rounded-lg p-4">
                     <div className="space-y-2">
                       <div className="flex justify-between">
-                        <span>Levelpath Runner Pro (Size 10, Black)</span>
+                        <span>Soles4Souls Runner Pro (Size 10, Black)</span>
                         <span>$129.99</span>
                       </div>
                       <div className="flex justify-between">

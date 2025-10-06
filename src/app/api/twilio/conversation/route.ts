@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
         // Create a new conversation with Twilio
         console.log('🔄 Creating Twilio conversation with assistantSid:', assistantSid)
         const conversation = await client.conversations.v1.conversations.create({
-          friendlyName: 'Levelpath Shoes Customer Support',
+          friendlyName: 'Soles4Souls Customer Support',
           attributes: JSON.stringify({
             assistantSid,
             customerType: 'web',
@@ -230,7 +230,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       conversation: {
         sid: conversationSid,
-        friendlyName: 'Levelpath Shoes Customer Support',
+        friendlyName: 'Soles4Souls Customer Support',
         status: 'active',
         attributes: {
           assistantSid: 'demo-assistant',

@@ -1,6 +1,6 @@
-# Levelpath Shoes Demo
+# Soles4Souls Demo
 
-This is a demo application for Levelpath Shoes showcasing AI Assistant integration.
+This is a demo application for Soles4Souls showcasing AI Assistant integration.
 
 ## Features
 - Modern shoe storefront

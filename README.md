@@ -111,7 +111,7 @@ NEXT_PUBLIC_APP_URL=https://your-vercel-app.vercel.app
 
 ## 📁 Project Structure
 ```
-/Volumes/DEV/LevelPath/
+/Volumes/DEV/Soles4Souls/
 ├── README.md                 # This file - project scope & progress
 ├── package.json             # Dependencies and scripts
 ├── next.config.js           # Next.js configuration
