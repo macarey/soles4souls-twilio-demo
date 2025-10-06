@@ -221,26 +221,47 @@ export const mockImpactStories = [
 export const mockDropOffLocations = [
   {
     id: 'LOC-001',
-    name: 'Soles4Souls Headquarters',
+    name: 'Soles4Souls Headquarters & Distribution Center',
     address: '319 Martingale Dr, Old Hickory, TN 37138',
-    hours: 'Mon-Fri: 8AM-5PM, Sat: 9AM-3PM',
+    hours: 'Monday-Friday: 8:00AM-5:00PM, Saturday: 9:00AM-3:00PM, Sunday: Closed',
     phone: '(615) 391-5723',
-    acceptsItems: ['Shoes', 'Clothing', 'Accessories']
+    acceptsItems: ['Shoes', 'Clothing', 'Accessories'],
+    specialInstructions: 'Main distribution center - accepts all donations. Tours available by appointment.'
   },
   {
     id: 'LOC-002',
     name: 'Nashville Community Center',
     address: '123 Community Way, Nashville, TN 37201',
-    hours: 'Mon-Sun: 9AM-7PM',
+    hours: 'Monday-Sunday: 9:00AM-7:00PM',
     phone: '(615) 555-0123',
-    acceptsItems: ['Shoes', 'Clothing']
+    acceptsItems: ['Shoes', 'Clothing'],
+    specialInstructions: 'Located downtown Nashville - convenient for city residents.'
   },
   {
     id: 'LOC-003',
+    name: 'Nashville West Partnership',
+    address: '789 West End Ave, Nashville, TN 37203',
+    hours: 'Monday-Friday: 10:00AM-6:00PM, Saturday: 10:00AM-4:00PM, Sunday: Closed',
+    phone: '(615) 555-0789',
+    acceptsItems: ['Shoes', 'Clothing', 'Accessories'],
+    specialInstructions: 'West Nashville location - near Vanderbilt area.'
+  },
+  {
+    id: 'LOC-004',
+    name: 'Nashville East Drop-off',
+    address: '456 East Nashville Blvd, Nashville, TN 37206',
+    hours: 'Monday-Friday: 9:00AM-5:00PM, Saturday: 9:00AM-2:00PM, Sunday: Closed',
+    phone: '(615) 555-0456',
+    acceptsItems: ['Shoes', 'Clothing'],
+    specialInstructions: 'East Nashville community location - volunteer-run.'
+  },
+  {
+    id: 'LOC-005',
     name: 'Memphis Partnership Location',
     address: '456 Partnership Blvd, Memphis, TN 38101',
-    hours: 'Mon-Fri: 10AM-6PM',
+    hours: 'Monday-Friday: 10:00AM-6:00PM',
     phone: '(901) 555-0456',
-    acceptsItems: ['Shoes', 'Clothing', 'Accessories']
+    acceptsItems: ['Shoes', 'Clothing', 'Accessories'],
+    specialInstructions: 'Memphis area partner location.'
   }
 ]

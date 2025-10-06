@@ -24,6 +24,13 @@ export async function POST(request: NextRequest) {
       })
     }
     
+    // Special handling for Nashville queries
+    const isNashvilleQuery = city && city.toLowerCase().includes('nashville')
+    const nashvilleLocations = filteredLocations.filter(location => 
+      location.address.toLowerCase().includes('nashville') || 
+      location.address.toLowerCase().includes('old hickory')
+    )
+    
     return NextResponse.json({
       success: true,
       locations: filteredLocations.map(location => ({
@@ -33,6 +40,7 @@ export async function POST(request: NextRequest) {
         hours: location.hours,
         phone: location.phone,
         acceptsItems: location.acceptsItems,
+        specialInstructions: location.specialInstructions,
         services: [
           'Donation drop-off',
           'Volunteer opportunities',
@@ -40,6 +48,11 @@ export async function POST(request: NextRequest) {
           'Impact tours'
         ]
       })),
+      nashvilleHighlight: isNashvilleQuery ? {
+        message: "Great choice! Nashville is our headquarters city with multiple convenient drop-off locations.",
+        totalLocations: nashvilleLocations.length,
+        mainLocation: "Soles4Souls Headquarters & Distribution Center (Old Hickory) is our main facility"
+      } : null,
       donationGuidelines: {
         acceptedItems: [
           'Shoes (all types and sizes)',
@@ -62,7 +75,8 @@ export async function POST(request: NextRequest) {
         available: true,
         description: 'Can\'t drop off in person? We accept shipped donations!',
         address: 'Soles4Souls, 319 Martingale Dr, Old Hickory, TN 37138',
-        instructions: 'Include your contact information inside the package for impact updates'
+        instructions: 'Include your contact information inside the package for impact updates',
+        nashvilleNote: isNashvilleQuery ? 'Since you\'re in the Nashville area, shipping is especially convenient to our headquarters!' : null
       }
     })
     
