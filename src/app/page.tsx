@@ -5,12 +5,14 @@ import Link from 'next/link'
 import { Search, Menu, X, Heart, Users, Globe, ArrowRight } from 'lucide-react'
 import { mockProducts } from '@/lib/data'
 import { Product } from '@/types'
+import DonationForm from '@/components/DonationForm'
 
 export default function HomePage() {
   const [cart, setCart] = useState<any[]>([])
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [donationFormOpen, setDonationFormOpen] = useState(false)
 
   const categories = ['all', 'running', 'casual', 'formal', 'athletic']
 
@@ -57,12 +59,12 @@ export default function HomePage() {
               >
                 Donate
               </Link>
-              <Link 
-                href="#give-shoes" 
+              <button 
+                onClick={() => setDonationFormOpen(true)}
                 className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
               >
                 Give Shoes
-              </Link>
+              </button>
               
               {/* Mobile menu button */}
               <button
@@ -92,12 +94,12 @@ export default function HomePage() {
             >
               Get Involved
             </Link>
-            <Link 
-              href="#give-shoes" 
+            <button 
+              onClick={() => setDonationFormOpen(true)}
               className="bg-green-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-green-700 transition-colors"
             >
               Give Shoes
-            </Link>
+            </button>
           </div>
         </div>
       </section>
@@ -230,12 +232,12 @@ export default function HomePage() {
               <p className="text-lg">You've saved them from going to <strong>waste.</strong></p>
               <p className="text-lg">We've put them to <strong>good use.</strong></p>
             </div>
-            <Link 
-              href="#give-shoes" 
+            <button 
+              onClick={() => setDonationFormOpen(true)}
               className="inline-block bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold mt-6 hover:bg-gray-100 transition-colors"
             >
               Give Shoes
-            </Link>
+            </button>
           </div>
         </div>
       </section>
@@ -462,6 +464,12 @@ export default function HomePage() {
           </div>
         </div>
       </footer>
+      
+      {/* Donation Form Modal */}
+      <DonationForm 
+        isOpen={donationFormOpen} 
+        onClose={() => setDonationFormOpen(false)} 
+      />
     </div>
   )
 }
